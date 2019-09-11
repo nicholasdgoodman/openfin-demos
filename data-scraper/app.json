@@ -1,0 +1,15 @@
+{
+    "startup_app": {
+        "name": "Weather Scraping Dashboard",
+        "description": "Demonstrate scraping data from child windows",
+        "url": "http://localhost:4001/index.html",
+        "uuid": "simple-dashboard",
+        "autoShow": true
+    },
+    "runtime": {
+        "arguments": "",
+        "version": "stable"
+    },
+    "shortcut": {
+    }
+}

@@ -1,0 +1,151 @@
+<html>
+<head>
+<script>
+const refreshIntervals = {};
+
+function addOrUpdateLocation() {
+  let locationSelector = document.querySelector('#locationSelector');
+  let selectedLocation = locationSelector.options[locationSelector.selectedIndex];
+  let selectedText = selectedLocation.innerText;
+  let selectedValue = selectedLocation.value;
+  let selectedLatLon = selectedLocation.dataset.location;
+  
+  let refreshSelector = document.querySelector('#refreshSelector');
+  let selectedRefresh = refreshSelector.options[refreshSelector.selectedIndex];
+  let refreshIntervalms = selectedRefresh.value;
+  
+  let locationWindow = fin.Window.wrapSync({
+    uuid: fin.Application.getCurrentSync().identity.uuid,
+    name: selectedValue
+  });
+  
+  if(!refreshIntervals[selectedValue]) {
+  // This location is not currently being monitored, open a window
+    locationWindow.on('initialized', () => {
+      scrapeData(selectedValue, selectedText);
+    });
+    
+    locationWindow.on('closed', () => {
+      clearInterval(refreshIntervals[selectedValue]);
+      deleteRow(selectedValue);
+    });
+  
+    fin.Window.create({
+      name: selectedValue,
+      url: 'https://darksky.net/forecast/' + selectedLatLon,
+      autoShow: true
+    });
+    
+    upsertRow(selectedValue, selectedText);
+  }
+  else {
+  // If we are currently monitoring it, cancel the current interval
+    clearInterval(refreshIntervals[selectedValue]);
+  }
+  
+  // Now we can reload the page on the specified refresh interval
+  refreshIntervals[selectedValue] = setInterval(() => {
+    locationWindow.reload();
+  }, refreshIntervalms);
+}
+
+function upsertRow(id, city, temp, high, low) {
+  let row = document.getElementById(id);
+  
+  if(row === null) { 
+    let weatherTableBody = document.querySelector('#weatherTableBody');
+    let rowTemplate = document.querySelector('#rowTemplate');
+    
+    let rowFragment = document.importNode(rowTemplate.content, true);
+    rowFragment.querySelector('tr').id = id;
+    weatherTableBody.appendChild(rowFragment);
+    
+    row = document.getElementById(id);
+  }
+    
+  let values = row.querySelectorAll('td');
+  
+  values[0].textContent = city;
+  values[1].textContent = temp;
+  values[2].textContent = high;
+  values[3].textContent = low; 
+}
+
+function deleteRow(id) {
+  let row = document.getElementById(id);
+  row.parentNode.removeChild(row);
+}
+
+async function scrapeData(windowName, city) {
+  let targetWindow = fin.desktop.Window.wrap(fin.desktop.Application.getCurrent().uuid, windowName);
+  
+  let currentTemp = await new Promise((resolve,reject) => {
+    targetWindow.executeJavaScript(
+      "document.querySelector('.currently > .desc > .summary').innerText",
+      resolve,
+      reject
+    )
+  });
+  
+  let lowTemp = await new Promise((resolve,reject) => {
+    targetWindow.executeJavaScript(
+      "document.querySelector('.low-temp-text').innerText",
+      resolve,
+      reject
+    )
+  });
+  
+  let highTemp = await new Promise((resolve,reject) => {
+    targetWindow.executeJavaScript(
+      "document.querySelector('.high-temp-text').innerText",
+      resolve,
+      reject
+    )
+  });
+    
+  upsertRow(windowName, city, currentTemp, highTemp, lowTemp);
+}
+</script>
+</head>
+<body>
+<section>
+<div>
+  Select Location:
+  <br/>
+  <select id="locationSelector">
+    <option value="lisbon-pt" data-location="38.9954,-9.1996">Lisbon, Portugal</option>
+    <option value="london-uk" data-location="51.5096,-0.0991">London, United Kingdom</option>
+    <option value="new-york" data-location="40.777,-73.9676">New York, NY</option>
+    <option value="washington-dc" data-location="38.8951,-77.0364">Washington, DC</option>
+  </select>
+  <br/>
+  Refresh Rate:
+  <br/>
+  <select id="refreshSelector">
+    <option value="10000">10 sec</option>
+    <option value="30000">30 sec</option>
+    <option value="60000">1 min</option>
+    <option value="300000">5 min</option>
+  </select>
+  <br/>
+  <button onclick="addOrUpdateLocation()">Add / Update</button>
+</div>
+</section>
+<hr/>
+<section>
+  <table>
+    <thead>
+      <th>City</th>
+      <th>Temp</th>
+      <th>High</th>
+      <th>Low</th>
+    </thead>
+    <tbody id="weatherTableBody">
+      <template id="rowTemplate">
+        <tr><td/><td/><td/><td/></tr>
+      </template>
+    </tbody>
+  </table>
+</section>
+</body>
+</html>
