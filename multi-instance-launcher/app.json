@@ -1,0 +1,25 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "OpenFin Interop Demo",
+        "description": "OpenFin Interop Demo",
+        "uuid": "multi-app-demo",
+        "autoShow": true,
+        "layout": {
+            "windows": []
+        },
+        "url": "",
+        "preloadScripts": [
+            {
+                "url": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/global-preload.js"
+            }
+        ]
+    },
+    "runtime": {
+        "arguments": "",
+        "version": "14.78.46.21"
+    },
+    "shortcut": {
+
+    }
+}
