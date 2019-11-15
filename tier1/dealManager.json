@@ -1,0 +1,16 @@
+{
+    "startup_app": {
+        "name": "Tier 1 Deal Manager",
+        "description": "Tier 1 Deal Manager POC",
+        "url": "https://login.salesforce.com/?un=nicholas@openfin.co.t1c&pw=haveagood1&startURL=/apex/T1C_Base__DealManager",
+        "uuid": "tier1-deal-manager",
+        "autoShow": true,
+        "defaultWidth": 1000,
+        "defaultHeight": 525
+    },
+    "runtime": {
+        "arguments": "",
+        "version": "stable"
+    },
+    "shortcut": {}
+}
