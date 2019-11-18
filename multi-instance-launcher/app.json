@@ -11,13 +11,13 @@
         "url": "",
         "preloadScripts": [
             {
-                "url": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/global-preload.js"
+                "url": "http://localhost:6001/global-preload.js"
             }
         ]
     },
     "runtime": {
         "arguments": "",
-        "version": "14.78.46.21"
+        "version": "14.78.47.1"
     },
     "shortcut": {
 
