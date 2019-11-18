@@ -84,7 +84,7 @@ async function standardFramePreload() {
     let styles = document.createElement('link');
     styles.setAttribute('rel', 'stylesheet');
     styles.setAttribute('type', 'text/css');
-    styles.setAttribute('href', 'http://localhost:6001/styles.css');
+    styles.setAttribute('href', 'https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/styles.css');
 
     document.head.append(styles);
 }
