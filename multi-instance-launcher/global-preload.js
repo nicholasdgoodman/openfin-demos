@@ -141,7 +141,7 @@ async function fdc3ProxyWindowPreload() {
 
     fdc3.addContextListener(ctx => {
         console.log('fdc3 context listener');
-        if(fdc3ProxyChannel.connections.length > 0) {
+        if(fdc3ProxyChannel.connections.length > 0 && evt.identity.name === currentWindow.identity.name) {
             fdc3ProxyChannel.dispatch(
                 fdc3ProxyChannel.connections[0],
                 'context-changed',
