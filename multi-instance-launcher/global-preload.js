@@ -21,6 +21,9 @@ window.addEventListener('load', () => {
     else if (currentWindow.identity.name.startsWith('fdc3/')) {
         fdc3ProxyWindowPreload();
     }
+    else if (location.origin.includes('tier1crm')) {
+        contactDetailPreload();
+    }
     else {
         frameContentPreload();
     }
@@ -122,6 +125,20 @@ async function fdc3ProxyWindowPreload() {
         fdc3.broadcast(ctx);
     });
 
+    fdc3ProxyChannel.register('raiseIntent', ([intent, ctx]) => {
+        console.log('Intent raised: ', intent);
+        console.dir(ctx);
+
+        switch(intent) {
+            case 'ViewContact':
+                viewContact(ctx);
+                break;
+            case 'StartCall':
+                startCall(ctx);
+                break;
+        }
+    });
+
     fdc3.addContextListener(ctx => {
         console.log('fdc3 context listener');
         if(fdc3ProxyChannel.connections.length > 0) {
@@ -134,8 +151,7 @@ async function fdc3ProxyWindowPreload() {
 
     fdc3.addEventListener('channel-changed', evt => {
         console.log('fdc3 channel changed');
-        if(fdc3ProxyChannel.connections.length > 0 && 
-           evt.identity.name === currentWindow.identity.name) {
+        if(fdc3ProxyChannel.connections.length > 0) {
             fdc3ProxyChannel.dispatch(
                 fdc3ProxyChannel.connections[0],
                 'channel-changed',
@@ -144,6 +160,39 @@ async function fdc3ProxyWindowPreload() {
     });
 
     console.log('FDC3 Proxy Configured');
+
+    async function viewContact(ctx) {
+        const contactIds = {
+            'Ismael Dynes': '0033000000VxPE8AAN',
+            'William Atkinson': '0033000000VxPcXAAV',
+            'Nolan Vanbeek': '0033000000VxPDbAAN',
+            'Alma Heath': '0033000000MS61xAAD'
+        };
+        
+        let name = ctx.name || 'Ismael Dynes';
+        let contactId = contactIds[name] || '0033000000VxPE8AAN';
+
+        // height: 675, width: 565
+        await fin.Window.create({
+            name: name,
+            url: 'https://login.salesforce.com/?un=demo.admin@tier1crm.com&pw=Acedemo123&startURL=/apex/T1C_Base__ACECoreWrapper?path=ACE.CoreWrappers.SummaryCoreWrapper%26Id=' + contactId,
+            defaultHeight: 675,
+            defaultWidth: 565,
+            defaultCentered: true,
+            waitForPageLoad: false
+        });
+    }
+
+    async function startCall(ctx) {
+        let name = ctx.name;
+
+        await fin.Window.create({
+            name: 'Calling ' + name,
+            url: 'http://ec2-34-229-228-38.compute-1.amazonaws.com/call/?name=' + name,
+            defaultWidth: 325,
+            defaultHeight: 200
+        });
+    }
 }
 
 async function frameContentPreload() {
@@ -183,6 +232,9 @@ async function frameContentPreload() {
         },
         addContextListener: function(listener){
             contextListeners.push(listener);
+        },
+        raiseIntent: function(intent, ctx) {
+            fdc3ProxyChannel.dispatch('raiseIntent', [intent, ctx]);
         }
     }
 
@@ -219,4 +271,33 @@ async function frameContentPreload() {
         document.title = docTitle;
         fdc3ProxyChannel.dispatch('setTitle', docTitle);
     }, 500);
+}
+
+async function contactDetailPreload() {
+    console.log('Contact Detail Preload');
+
+    let info = await fin.Frame.getCurrentSync().getInfo();
+    let name = info.name;
+    let parentWindowName = info.parent.name;
+
+    let fdc3ChannelName = parentWindowName.split('/')[1];
+    let fdc3ProxyChannel = await fin.InterApplicationBus.Channel.connect(fdc3ChannelName);
+
+    console.log('Connected to FDC3 mock');
+
+    let phoneNumberEl;
+    
+    while(!phoneNumberEl) {
+        console.log('waiting for phone number...');
+        await new Promise(rs => setTimeout(rs, 1000));
+        phoneNumberEl = document.getElementById('Phone:ContactlabelEditContainer');
+    }
+
+    phoneNumberEl.addEventListener('click', evt => {
+        console.log('Rasing Intent StartCall');
+        fdc3ProxyChannel.dispatch('raiseIntent', ['StartCall', { type: 'fdc3.contact', name }]);
+
+        evt.stopPropagation();
+        evt.preventDefault();
+    });
 }
