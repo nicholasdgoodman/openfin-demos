@@ -1,9 +1,8 @@
 {
-    "devtools_port": 9090,
     "startup_app": {
-        "name": "OpenFin Interop Demo",
-        "description": "OpenFin Interop Demo",
-        "uuid": "multi-app-demo",
+        "name": "My Orders",
+        "description": "My Orders",
+        "uuid": "order-book-demo",
         "autoShow": false,
         "layout": {
             "windows": [

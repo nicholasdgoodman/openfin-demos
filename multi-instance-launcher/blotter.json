@@ -1,9 +1,8 @@
 {
-    "devtools_port": 9090,
     "startup_app": {
-        "name": "OpenFin Interop Demo",
-        "description": "OpenFin Interop Demo",
-        "uuid": "multi-app-demo",
+        "name": "My Orders",
+        "description": "My Orders",
+        "uuid": "order-book-demo",
         "autoShow": false,
         "layout": {
             "windows": [
@@ -54,7 +53,7 @@
         "version": "14.78.47.4"
     },
     "services": [
-        { "name": "fdc3" }
+        { "name": "fdc3", "name": "notifications" }
     ],
     "shortcut": {}
 }
