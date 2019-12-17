@@ -1,0 +1,42 @@
+<html>
+<head>
+<style>
+body { font-family: sans-serif; }
+pre { background-color: lightaliceblue; };
+</style>
+</head>
+<body>
+Send Topic: <pre id="sendtopic"></pre><br/>
+Recv Topic: <pre id="recvtopic"></pre><br/>
+<div>
+<pre id="datasend" contenteditable>Hello</pre>
+<button onclick=sendMessage()>Send Message</button>
+</div>
+<div>
+<pre id="datarecv" style="min-height:100px"></pre>
+<button onclick=clearData()>Clear</button>
+</div>
+<script>
+
+const sendTopic = 'test-topic';
+const recvTopic = 'test-response';
+
+document.getElementById('sendtopic').innerText = sendTopic;
+document.getElementById('recvtopic').innerText = recvTopic;
+
+fin.InterApplicationBus.subscribe({uuid: '*'}, recvTopic, recvMessage);
+
+function sendMessage() {
+  fin.InterApplicationBus.publish(sendTopic, document.getElementById('datasend').innerText);
+}
+
+function recvMessage(msg) {
+  document.getElementById('datarecv').innerText += msg + '\r\n';
+}
+
+function clearData() {
+  document.getElementById('datarecv').innerText = '';
+}
+</script>
+</body>
+</html>
