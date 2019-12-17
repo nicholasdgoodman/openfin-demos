@@ -1,0 +1,16 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "OpenFin-Delphi-POC",
+        "description": "OpenFin-Delphi-POC",
+        "_url": "http://localhost:4000/index.html",
+        "url": "https://nicholasdgoodman.github.io/openfin-demos/delphi-poc-app/index.html",
+        "uuid": "OpenFin-Delphi-POC",
+        "autoShow": true
+    },
+    "runtime": {
+        "arguments": "",
+        "version": "stable"
+    },
+    "shortcut": {}
+}
