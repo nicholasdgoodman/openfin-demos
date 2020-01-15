@@ -28,7 +28,7 @@
                                         "componentState": {
                                             "processAffinity": "single",
                                             "_url": "http://localhost:6001/blotter/index.html",
-                                            "url": "http://ec2-34-229-228-38.compute-1.amazonaws.com/blotter/"
+                                            "url": "https://fastfin.com/blotter/"
                                         },
                                         "isClosable": true,
                                         "reorderEnabled": true,
