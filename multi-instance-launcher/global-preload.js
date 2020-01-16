@@ -190,7 +190,7 @@ async function fdc3ProxyWindowPreload() {
 
         await fin.Window.create({
             name: 'Calling ' + name,
-            url: 'http://ec2-34-229-228-38.compute-1.amazonaws.com/call/?name=' + name,
+            url: 'https://fastfin.com/call/?name=' + name,
             defaultWidth: 325,
             defaultHeight: 200
         });
