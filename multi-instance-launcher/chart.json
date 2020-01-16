@@ -1,56 +1,61 @@
 {
-    "startup_app": {
+    "platform": {
         "name": "My Orders",
         "description": "My Orders",
         "uuid": "order-book-demo",
         "autoShow": false,
-        "layout": {
-            "windows": [
-                {
-                    "autoShow": false,
-                    "defaultHeight": 530,
-                    "defaultWidth": 750,
-                    "layoutConfig": {
-                        "content": [
-                            {
-                                "type": "stack",
-                                "header": {},
-                                "isClosable": true,
-                                "reorderEnabled": true,
-                                "title": "title",
-                                "activeItemIndex": 0,
-                                "width": 100,
-                                "height": 100,
-                                "content": [
-                                    {
-                                        "type": "component",
-                                        "componentName": "view",
-                                        "componentState": {
-                                            "processAffinity": "single",
-                                            "_url": "http://localhost:6001/chart/index.html",
-                                            "url": "https://fastfin.com/chart/"
-                                        },
-                                        "isClosable": true,
-                                        "reorderEnabled": true,
-                                        "title": "view"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
+        "defaultWindowOptions": {
+            "_stylesheetUrl": "http://localhost:6001/styles.css",
+            "stylesheetUrl": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcer/styles.css"
         },
         "preloadScripts": [
             {
-                "_url": "http://localhost:6001/global-preload.js",
-                "url": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/global-preload.js"
+                "url": "http://localhost:6001/global-preload.js",
+                "_url": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/global-preload.js"
+            }
+        ]
+    },
+    "snapshot": {
+        "windows": [
+            {
+                "autoShow": false,
+                "backgroundColor": "#888888",
+                "defaultHeight": 530,
+                "defaultWidth": 750,
+                "layout": {
+                    "content": [
+                        {
+                            "type": "stack",
+                            "header": {},
+                            "isClosable": true,
+                            "reorderEnabled": true,
+                            "title": "title",
+                            "activeItemIndex": 0,
+                            "width": 100,
+                            "height": 100,
+                            "content": [
+                                {
+                                    "type": "component",
+                                    "componentName": "view",
+                                    "componentState": {
+                                        "processAffinity": "single",
+                                        "_url": "http://localhost:6001/chart/index.html",
+                                        "url": "https://fastfin.com/chart/"
+                                    },
+                                    "isClosable": true,
+                                    "reorderEnabled": true,
+                                    "title": "view"
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         ]
     },
     "runtime": {
         "arguments": "",
-        "version": "14.78.47.4"
+        "version": "14.78.47.23"
     },
     "services": [
         { "name": "fdc3" }

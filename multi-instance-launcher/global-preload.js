@@ -1,5 +1,5 @@
 const currentApp = window.fin.Application.getCurrentSync();
-const currentWindow = window.fin.Window.getCurrentSync();
+const currentWindow = fin.me.isWindow ? window.fin.Window.getCurrentSync() : undefined;
 
 //HACK: this belongs in the frameContentPreload
 //      but is used before the load operation completes
@@ -18,7 +18,7 @@ window.addEventListener('load', () => {
     else if (location.protocol === 'file:' && location.href.includes('standard-frame')) {
         standardFramePreload();
     }
-    else if (currentWindow.identity.name.startsWith('fdc3/')) {
+    else if (fin.me.name.startsWith('fdc3/')) {
         fdc3ProxyWindowPreload();
     }
     else if (location.origin.includes('tier1crm')) {
@@ -35,11 +35,13 @@ async function standardFrameProviderPreload() {
     const windowCreate = fin.Window.create;
 
     fin.Window.create = function(opts) {
-        if(opts.layoutConfig && opts.layoutConfig.content) {
+        if(opts.layout && opts.layout.content) {
             console.log('Patching view names...');
-            autoNameViews(opts.layoutConfig.content);
-            createFdc3ProxyWindows(opts.layoutConfig.content);
+            autoNameViews(opts.layout.content);
+            createFdc3ProxyWindows(opts.layout.content);
         }
+
+        opts.autoShow = false;
         
         return windowCreate.call(fin.Window, opts);
     };
@@ -74,7 +76,8 @@ async function standardFrameProviderPreload() {
                     defaultWidth: 40,
                     defaultTop: -60,
                     defaultLeft: -60,
-                    opacity: 0.01
+                    opacity: 0.01,
+                    showTaskbarIcon: false
                 });
             }
         });
@@ -84,12 +87,10 @@ async function standardFrameProviderPreload() {
 async function standardFramePreload() {
     console.log('Standard Frame Preload');
 
-    let styles = document.createElement('link');
-    styles.setAttribute('rel', 'stylesheet');
-    styles.setAttribute('type', 'text/css');
-    styles.setAttribute('href', 'https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/styles.css');
+    fin.Window.getCurrentSync().updateOptions({ contextMenu: true});
+    fin.Window.getCurrentSync().show();
 
-    document.head.append(styles);
+    console.dir(GoldenLayout);
 }
 
 async function fdc3ProxyWindowPreload() {
@@ -122,6 +123,7 @@ async function fdc3ProxyWindowPreload() {
     
     fdc3ProxyChannel.register('broadcast', ctx => {
         console.log('fdc3 broadcasting');
+        ctx.id = { ticker: ctx.instrumentCode };
         fdc3.broadcast(ctx);
     });
 
@@ -203,8 +205,8 @@ async function frameContentPreload() {
 
     let launchPadChannelWindow = fin.Window.wrapSync({uuid: 'osLaunchpadMain', name: 'osLaunchpadChannels'});
     let fdc3ProxyWindow = fin.Window.wrapSync({
-        uuid: currentWindow.identity.uuid,
-        name: 'fdc3/' + currentWindow.identity.name
+        uuid: win.identity.uuid,
+        name: 'fdc3/' + fin.me.name
     });
 
     launchPadChannelWindow.on('shown', () => {
@@ -223,8 +225,7 @@ async function frameContentPreload() {
         fdc3ProxyWindow.hide();
     });
 
-    let fdc3ProxyChannel = await fin.InterApplicationBus.Channel.connect(currentWindow.identity.name);
-    //let contextListeners = [];
+    let fdc3ProxyChannel = await fin.InterApplicationBus.Channel.connect(fin.me.name);
 
     window._fdc3 = {
         broadcast: function(ctx) {
@@ -263,14 +264,6 @@ async function frameContentPreload() {
             document.body.style.borderLeft = null;
         }
     });
-
-    //HACK: Fix title loss when tabs change windows
-    setInterval(() => {
-        let docTitle = document.title;
-        document.title = docTitle.substring(0, docTitle.length - 1);
-        document.title = docTitle;
-        fdc3ProxyChannel.dispatch('setTitle', docTitle);
-    }, 500);
 }
 
 async function contactDetailPreload() {
