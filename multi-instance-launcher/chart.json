@@ -6,7 +6,7 @@
         "autoShow": false,
         "defaultWindowOptions": {
             "_stylesheetUrl": "http://localhost:6001/styles.css",
-            "stylesheetUrl": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcer/styles.css"
+            "stylesheetUrl": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/styles.css"
         },
         "preloadScripts": [
             {
