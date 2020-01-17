@@ -10,8 +10,8 @@
         },
         "preloadScripts": [
             {
-                "url": "http://localhost:6001/global-preload.js",
-                "_url": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/global-preload.js"
+                "_url": "http://localhost:6001/global-preload.js",
+                "url": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/global-preload.js"
             }
         ]
     },
