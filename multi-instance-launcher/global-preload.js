@@ -255,8 +255,8 @@ async function fdc3ProxyWindowPreload() {
     async function startCall(ctx) {
         let name = ctx.name;
 
-        if((await fin.System.getAllExternalApplications()).some(exApp => exApp.uuid === 'cloud9-crm-uuid')) {
-            fin.InterApplicationBus.publish('CRMTOPBXDIAL', {
+        if((await fin.System.getAllApplications()).some(exApp => exApp.uuid === 'cloud9-crm-uuid')) {
+            fin.InterApplicationBus.publish('CRMTOPBXDIAL-EX', {
                 data: '2026696134'
             });
         }
