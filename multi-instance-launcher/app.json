@@ -5,10 +5,7 @@
         "description": "OpenFin Interop Demo",
         "uuid": "multi-app-demo",
         "autoShow": true,
-        "layout": {
-            "windows": []
-        },
-        "url": "",
+        "url": "http://localhost:6001/blank.html",
         "preloadScripts": [
             {
                 "url": "http://localhost:6001/global-preload.js"
@@ -16,10 +13,8 @@
         ]
     },
     "runtime": {
-        "arguments": "",
-        "version": "14.78.47.1"
+        "arguments": "--v=1",
+        "version": "14.78.47.23"
     },
-    "shortcut": {
-
-    }
+    "shortcut": {}
 }

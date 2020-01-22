@@ -1,3 +1,5 @@
+console.log('Global Preload');
+
 const currentApp = window.fin.Application.getCurrentSync();
 const currentWindow = fin.me.isWindow ? window.fin.Window.getCurrentSync() : undefined;
 
@@ -5,11 +7,65 @@ const currentWindow = fin.me.isWindow ? window.fin.Window.getCurrentSync() : und
 //      but is used before the load operation completes
 //      so must be defined earlier
 const contextListeners = [];
+window._contextListeners = contextListeners;
 window._fdc3 = {
     addContextListener: function(listener) {
+        console.log('addContextListener');
         contextListeners.push(listener);
     }
 };
+
+let goldenLayout;
+Object.defineProperty(window, 'GoldenLayout', {
+    get() { return goldenLayout; },
+    set(value) {
+        class CustomLayout extends value.GoldenLayout {
+            constructor(config, container) {
+                super(config, container);
+            }
+
+            registerComponent(name, Component) {
+                class ExComponent extends Component {
+                    constructor(container, state) {
+                        super(container, state);
+
+                        container.on('tab', tab => { 
+                            console.log('tab created', tab);
+
+                            let channelIcon = $(`<span style="padding: 0px 8px;">&#11044;</span>`);
+
+                            let setChannel = function() {
+                                console.log('setChannel');
+                                let tabComponentState = tab.contentItem.config.componentState;
+                                let { contextChannel = 'default' } = tabComponentState && tabComponentState.customData || {};
+                                channelIcon.css({color: `var(--channel-${contextChannel})`});
+                            };
+
+                            tab.contentItem.on('stateChanged', setChannel);
+                            setChannel();
+
+                            document.body.addEventListener('fdc3-channel-changed', evt => {
+                                if(evt.detail.identity.name.includes(tab.contentItem.config.componentState.name)) {
+                                    let { customData = {}} = container.getState();
+                                    Object.assign(customData, { contextChannel: evt.detail.channel.id });
+                                    container.extendState({ customData });
+                                }
+                            });
+
+                            tab.element.children('.lm_left').after(channelIcon);
+                        });
+                    }
+                }
+                
+                super.registerComponent(name, ExComponent);
+            }
+        }
+
+        goldenLayout = {
+            GoldenLayout: CustomLayout
+        }
+    }
+});
 
 window.addEventListener('load', () => {
     if (location.protocol === 'file:' && location.href.includes('standard-frame-provider')) {
@@ -90,7 +146,13 @@ async function standardFramePreload() {
     fin.Window.getCurrentSync().updateOptions({ contextMenu: true});
     fin.Window.getCurrentSync().show();
 
-    console.dir(GoldenLayout);
+    await fin.InterApplicationBus.subscribe({ uuid: '*'}, 'fdc3-channel-changed', evt => {
+        console.dir('got channel change', evt);
+        let channelEvent = new CustomEvent('fdc3-channel-changed', { detail: evt } );
+        document.body.dispatchEvent(channelEvent);
+    });
+
+    console.log('subscribed');
 }
 
 async function fdc3ProxyWindowPreload() {
@@ -142,7 +204,7 @@ async function fdc3ProxyWindowPreload() {
     });
 
     fdc3.addContextListener(ctx => {
-        console.log('fdc3 context listener');
+        console.log('fdc3 context listener', ctx, fdc3ProxyChannel);
         if(fdc3ProxyChannel.connections.length > 0) {
             fdc3ProxyChannel.dispatch(
                 fdc3ProxyChannel.connections[0],
@@ -158,6 +220,7 @@ async function fdc3ProxyWindowPreload() {
                 fdc3ProxyChannel.connections[0],
                 'channel-changed',
                 evt);
+            fin.InterApplicationBus.publish('fdc3-channel-changed', evt);   
         }
     });
 
@@ -174,6 +237,7 @@ async function fdc3ProxyWindowPreload() {
         let name = ctx.name || 'Ismael Dynes';
         let contactId = contactIds[name] || '0033000000VxPE8AAN';
 
+        console.log('creating window', currentWindow);
         // height: 675, width: 565
         await fin.Window.create({
             name: name,
@@ -181,19 +245,29 @@ async function fdc3ProxyWindowPreload() {
             defaultHeight: 675,
             defaultWidth: 565,
             defaultCentered: true,
-            waitForPageLoad: false
+            waitForPageLoad: false,
+            customData: {
+                parentWindowName: currentWindow.identity.name
+            }
         });
     }
 
     async function startCall(ctx) {
         let name = ctx.name;
 
-        await fin.Window.create({
-            name: 'Calling ' + name,
-            url: 'http://ec2-34-229-228-38.compute-1.amazonaws.com/call/?name=' + name,
-            defaultWidth: 325,
-            defaultHeight: 200
-        });
+        if((await fin.System.getAllExternalApplications()).some(exApp => exApp.uuid === 'cloud9-crm-uuid')) {
+            fin.InterApplicationBus.publish('CRMTOPBXDIAL', {
+                data: '2026696134'
+            });
+        }
+        else {
+            await fin.Window.create({
+                name: 'Calling ' + name,
+                url: 'https://fastfin.com/call/?name=' + name,
+                defaultWidth: 325,
+                defaultHeight: 200
+            });
+        }
     }
 }
 
@@ -209,7 +283,7 @@ async function frameContentPreload() {
         name: 'fdc3/' + fin.me.name
     });
 
-    launchPadChannelWindow.on('shown', () => {
+    launchPadChannelWindow.on('shown', window._fdc3Show = () => {
         console.log('Channel Picker Shown');
         fdc3ProxyWindow.show();
         fdc3ProxyWindow.setBounds({
@@ -220,18 +294,26 @@ async function frameContentPreload() {
         });
     });
 
-    launchPadChannelWindow.on('hidden', () => {
+    launchPadChannelWindow.on('hidden', window._fdc3Hide = () => {
         console.log('Channel Picker Hidden');
         fdc3ProxyWindow.hide();
     });
 
+    window._fdc3Debug = () => {
+        fdc3ProxyWindow.showDeveloperTools();
+        fin.Window.wrapSync({uuid:'fdc3-service',name:'fdc3-service'}).showDeveloperTools();
+    };
+
     let fdc3ProxyChannel = await fin.InterApplicationBus.Channel.connect(fin.me.name);
+    console.dir(fdc3ProxyChannel);
+    console.log(fdc3ProxyChannel.providerIdentity);
 
     window._fdc3 = {
         broadcast: function(ctx) {
             fdc3ProxyChannel.dispatch('broadcast', ctx);
         },
         addContextListener: function(listener){
+            console.log('addContextListener');
             contextListeners.push(listener);
         },
         raiseIntent: function(intent, ctx) {
@@ -240,38 +322,20 @@ async function frameContentPreload() {
     }
 
     fdc3ProxyChannel.register('context-changed', ctx => {
+        console.log('context-changed', contextListeners);
         contextListeners.forEach(listener => {
             listener(ctx);
         });
-    });
-
-    fdc3ProxyChannel.register('channel-changed', evt => {
-        const styles = {
-            red: 'solid 6px #df5353',
-            orange: 'solid 6px #fb8772',
-            yellow: 'solid 6px #ffdf92',
-            green: 'solid 6px #7bd5c1',
-            blue: 'solid 6px #5c78ff',
-            purple: 'solid 6px #c686e5'
-        }
-
-        let style = styles[evt.channel.id];
-
-        if(style) {
-            document.body.style.borderLeft = style;
-        }
-        else {
-            document.body.style.borderLeft = null;
-        }
     });
 }
 
 async function contactDetailPreload() {
     console.log('Contact Detail Preload');
 
-    let info = await fin.Frame.getCurrentSync().getInfo();
-    let name = info.name;
-    let parentWindowName = info.parent.name;
+    let info = await currentWindow.getOptions();
+    console.log('options: ', info)
+
+    let { parentWindowName } = info.customData;
 
     let fdc3ChannelName = parentWindowName.split('/')[1];
     let fdc3ProxyChannel = await fin.InterApplicationBus.Channel.connect(fdc3ChannelName);

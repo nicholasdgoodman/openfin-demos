@@ -22,6 +22,14 @@
     --asteriod-belt-30: #3a3a3a4b;
     --nebula-15: #958eff26;
 
+    --channel-default: #121212;
+    --channel-red: #df5353;
+    --channel-orange: #fb8772;
+    --channel-yellow: #ffdf92;
+    --channel-green: #7bd5c1;
+    --channel-blue: #5c78ff;
+    --channel-purple: #c686e5;
+
     --title-bar-height: 28px;
     --corners-radius: 0px;
     --splitter-width: 4px;
@@ -57,4 +65,9 @@
 .lm_content {
     border-bottom-left-radius: unset;
     border-bottom-right-radius: unset;
+}
+
+/* why isnt this already in? */
+.lm_controls {
+    display: none;
 }

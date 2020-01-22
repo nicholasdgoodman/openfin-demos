@@ -1,4 +1,6 @@
 {
+    "devtools_port": 9090,
+    "startup_app": { "uuid": "order-book-demo" },
     "platform": {
         "name": "My Orders",
         "description": "My Orders",
@@ -10,8 +12,8 @@
         },
         "preloadScripts": [
             {
-                "url": "http://localhost:6001/global-preload.js",
-                "_url": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/global-preload.js"
+                "_url": "http://localhost:6001/global-preload.js",
+                "url": "https://nicholasdgoodman.github.io/openfin-demos/multi-instance-launcher/global-preload.js"
             }
         ]
     },
@@ -39,7 +41,7 @@
                                     "componentName": "view",
                                     "componentState": {
                                         "processAffinity": "single",
-                                        "_url": "http://localhost:6001/summary/index.html",
+                                        "_url": "http://localhost:4200/index.html",
                                         "url": "https://fastfin.com/summary/"
                                     },
                                     "isClosable": true,
@@ -58,7 +60,9 @@
         "version": "14.78.47.23"
     },
     "services": [
-        { "name": "fdc3" }
+        {
+            "name": "fdc3"
+        }
     ],
     "shortcut": {}
 }
