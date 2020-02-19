@@ -1,0 +1,27 @@
+﻿<Window x:Class="main_app.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:main_app"
+        mc:Ignorable="d"
+        Title="Parent App" Height="320" Width="280">
+    <StackPanel>
+        <StackPanel.Resources>
+            <Style TargetType="Label">
+                <Setter Property="Margin" Value="0,10,0,0"/>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="Margin" Value="0,15,0,0"/>
+            </Style>
+        </StackPanel.Resources>
+        <Button Click="OpenApplication_Click">Open Child Application</Button>
+        <Label>Client Connection:</Label>
+        <ComboBox x:Name="connectedClients" DisplayMemberPath="Name" SelectedValuePath="Client"></ComboBox>
+        <Label>Message to Send</Label>
+        <TextBox x:Name="messageTextBox">Hello World</TextBox>
+        <Label>Response Received</Label>
+        <TextBox x:Name="responseTextBox" IsReadOnly="True"></TextBox>
+        <Button Click="SendMessage_Click">Send</Button>
+    </StackPanel>
+</Window>
