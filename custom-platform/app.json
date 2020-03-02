@@ -1,0 +1,21 @@
+{
+    "devtools_port": 9090,
+    "platform": {
+        "uuid": "app-launcher",
+        "providerUrl": "http://localhost:5001/launcher-main.html",
+        "autoShow": true,
+        "frame": false,
+        "alwaysOnTop": true,
+        "maximizable": false
+    },
+    "runtime": {
+        "arguments": "",
+        "version": "canary"
+    },
+    "shortcut": {
+        "company": "OpenFin",
+        "description": "Openfin POC",
+        "name": "Openfin POC"
+    },
+    "startup_app": null
+}
