@@ -23,17 +23,6 @@ const platformPromise = new Promise(resolve => {
                     }
                 }, opts);
 
-                // if(options.preloadScripts === undefined) {
-                //     options.preloadScripts = [];
-                // }
-
-                // preload scripts will work on initial launch but not when apply snapshot is called. It loses that state.
-               //options.preloadScripts.push({url:'http://localhost:5001/bind-group-layout.js'});
-
-               // when state is saved it means it wont remember whether it should be maximisable or not. So it should put the initial settings in state when it is created (although this does mean it can't be changed on a whim but that should be fine.)
-
-                console.log(options);
-
                 let win = await fin.Window.create(options);
                 return win;
             }
@@ -53,10 +42,6 @@ const platformPromise = new Promise(resolve => {
                         uuid: fin.me.uuid, name: w.name 
                     });
                     w.opacity = (await currentWindow.getOptions()).opacity;
-                    // if(w.customData === undefined) {
-                    //     w.customData = {};
-                    // }
-                    // w.customData.snapshot = { isInGroup:  (await currentWindow.getGroup().length > 0)};
                 }));
 
                 return snapshot;

@@ -83,10 +83,10 @@ export class GroupLayoutEngine {
       
       this.addListeners(this._platformWindow);
 
-      //let options = await this._platformWindow.getOptions();
-      //let wasInGroup = options.customData !== undefined && options.customData.snapshot !== undefined && options.customData.snapshot.isInGroup;
+      let options = await this._platformWindow.getOptions();
+      let isInGroup = options.customData !== undefined && options.customData.isInGroup === true;
       
-      if(await this._platformWindow.getGroup().length > 0) {
+      if(isInGroup || await this._platformWindow.getGroup().length > 0) {
         this._log("Already in a group. Setting up listeners.");
          await this.isInGroup();
       }
@@ -129,7 +129,6 @@ export class GroupLayoutEngine {
     }
   
     async groupChanged(event) {
-      console.log("Group Changed");
       if (event.reason === "join" && !this._isInGroup) {
         this._log(
           "This window is joining a group. Locking manual resize and listening to browser window resize events."
@@ -149,7 +148,7 @@ export class GroupLayoutEngine {
       this._isInGroup = true;
       this.browserWindow.addEventListener("resize", this.browserWindowResize);
       
-      await this._platformWindow.updateOptions(this._groupOptions.joinGroup);
+      await this._platformWindow.updateOptions(Object.assign({customData: { isInGroup: true }}, this._groupOptions.joinGroup));
 
       if(this._onGroupStatusChanged !== undefined) {
         this._onGroupStatusChanged(true);
@@ -162,7 +161,7 @@ export class GroupLayoutEngine {
         "resize",
         this.browserWindowResize
       );
-      await this._platformWindow.updateOptions(this._groupOptions.leaveGroup);
+      await this._platformWindow.updateOptions(Object.assign({customData: { isInGroup: false }}, this._groupOptions.leaveGroup));
       if(this._onGroupStatusChanged !== undefined) {
         this._onGroupStatusChanged(false);
       }
