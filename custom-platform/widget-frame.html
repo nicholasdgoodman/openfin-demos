@@ -6,11 +6,12 @@
     <div style="background-color: purple; color: white; -webkit-app-region:drag;">
         Header
         <span id="groupIdInput" style="display:inline-block; margin-left:16px; font-size: xx-small; height:16px; width:60px; border-style:none;background-color: darkmagenta; color: white;"></span>
-        <a id="groupIdClear" style="display:inline; cursor: pointer; margin-left:16px; font-size: small; color: white; -webkit-app-region:no-drag;">&#8663;</a>
+        <a id="groupIdClear" style="display:none; cursor: pointer; margin-left:16px; font-size: small; color: white; -webkit-app-region:no-drag;">&#8663;</a>
     </div>
     <br/>
     <div>Content</div>
     <div>State<input id="textInput"/></div>
+
     <script>
         (async function() {
             const groupIdInput = document.querySelector('#groupIdInput');
@@ -22,6 +23,24 @@
 
             groupIdInput.innerText = groupId
             textInput.value = state.textInput || '';
+
+            const engineModule = await import('./group-layout-engine.js');
+            const resolverModule = await import('./group-layout-resolver.js');
+            // teams can swap in their own layout resolver or group layout engine by switching
+            // out the js files or replacing this script and constructing it themselves
+            const resolver = new resolverModule.GroupLayoutResolver();
+            const layoutEngine = new engineModule.GroupLayoutEngine(
+                finWindow, 
+                resolver,
+                console.log
+            );
+            await layoutEngine.init(isGrouped => {
+                if(isGrouped) {
+                    groupIdClear.style.display = "inline";
+                } else {
+                    groupIdClear.style.display = "none";
+                }
+            });
 
             function setState(key, value) {
                 state[key] = value;

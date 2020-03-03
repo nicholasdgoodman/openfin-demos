@@ -10,6 +10,6 @@ The OpenFin CLI
 _Sample Usage_
 
 ```
-http-server -p 5001 -c-1
+npx http-server -p 5001 -c-1
 openfin -l -c http://localhost:5001/app.json
 ```
