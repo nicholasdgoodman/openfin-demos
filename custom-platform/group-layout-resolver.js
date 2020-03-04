@@ -104,12 +104,12 @@ export class GroupLayoutResolver {
             }
           );
          
-          // await this.determineOverlapOrGap(
-          //   windowToMove,
-          //   groupedWindows,
-          //   change.isHeightIncreasing,
-          //   change.height
-          // );
+          await this.determineOverlapOrGap(
+            windowToMove,
+            groupedWindows,
+            change.isHeightIncreasing,
+            change.height
+          );
         }
       }
     }
