@@ -28,7 +28,7 @@ export class GroupLayoutResolver {
         let windowInGroup = groupedWindows[i];
         let groupBounds = await windowInGroup.getBounds();
   
-        if (windowInGroup.identity.uuid !== triggerWindow.identity.uuid) {
+        if (windowInGroup.identity.name !== triggerWindow.identity.name) {
           let impact = change.isHeightIncreasing
             ? this.hasOverlap(change.newBounds, groupBounds)
             : this.hasGap(change.newBounds, groupBounds, change.height);
@@ -36,9 +36,9 @@ export class GroupLayoutResolver {
           if (impact) {
             this._log(
               "Group Window ID: " +
-                windowInGroup.identity.uuid +
-                " impacted by original window ID: " +
-                triggerWindow.identity.uuid +
+                windowInGroup.identity.name +
+                " impacted by original window name: " +
+                triggerWindow.identity.name +
                 " orginal window is increasing in height: " +
                 change.isHeightIncreasing +
                 " height change: " +
@@ -49,7 +49,7 @@ export class GroupLayoutResolver {
             if (!change.isHeightIncreasing) {
               this._log(
                 "Validating whether window: " +
-                  windowInGroup.identity.uuid +
+                  windowInGroup.identity.name +
                   " can be moved up without overlapping any other windows."
               );
             }
@@ -103,16 +103,13 @@ export class GroupLayoutResolver {
               moveIndependently: true
             }
           );
-          console.log(
-            "about to call determineOverlapOrGap for window: " +
-              windowToMove.identity.uuid
-          );
-          await this.determineOverlapOrGap(
-            windowToMove,
-            groupedWindows,
-            change.isHeightIncreasing,
-            change.height
-          );
+         
+          // await this.determineOverlapOrGap(
+          //   windowToMove,
+          //   groupedWindows,
+          //   change.isHeightIncreasing,
+          //   change.height
+          // );
         }
       }
     }
@@ -135,7 +132,7 @@ export class GroupLayoutResolver {
         for (let i = 0; i < group.length; i++) {
           let windowInGroup = group[i];
           let groupBounds = await windowInGroup.getBounds();
-          if (windowInGroup.identity.uuid !== movedWindow.identity.uuid) {
+          if (windowInGroup.identity.name !== movedWindow.identity.name) {
             let hasOverlap = this.hasOverlap(newBounds, groupBounds);
             let hasGap = this.hasGap(newBounds, groupBounds, moveTopBy);
             let impact;
@@ -167,19 +164,19 @@ export class GroupLayoutResolver {
           }
         }
   
-        if (windowsToRegroup.length > 0) {
-          console.log(
-            "About to call determineOverlapOrGap from determineOverlapOrGap."
-          );
-          for (let w = 0; w < windowsToRegroup.length; w++) {
-            await this.determineOverlapOrGap(
-              windowsToRegroup[w],
-              group,
-              isGrowing,
-              moveTopBy
-            );
-          }
-        }
+        // if (windowsToRegroup.length > 0) {
+        //   this._log(
+        //     "About to call determineOverlapOrGap from determineOverlapOrGap."
+        //   );
+        //   for (let w = 0; w < windowsToRegroup.length; w++) {
+        //     await this.determineOverlapOrGap(
+        //       windowsToRegroup[w],
+        //       group,
+        //       isGrowing,
+        //       moveTopBy
+        //     );
+        //   }
+        // }
       }
     }
   
@@ -220,14 +217,14 @@ export class GroupLayoutResolver {
   
       // &&d1_distance_from_top >= bounds2AdjustedTop;
       var gapWouldHaveBeenCreated =
-        ((bounds1.top < bounds2AdjustedTop &&
-          bounds2AdjustedTop < d1_distance_from_top) ||
-          (bounds1.top > bounds2AdjustedTop &&
-            bounds1.top < bounds2FullHeightAdjustedTop)) &&
-        ((bounds1.left < bounds2AdjustedLeft &&
-          bounds2AdjustedLeft < d1_distance_from_left) ||
-          (bounds1.left > bounds2AdjustedLeft &&
-            bounds1.left < bounds2FullWidthAdjustedLeft));
+        ((bounds1.top <= bounds2AdjustedTop &&
+          bounds2AdjustedTop <= d1_distance_from_top) ||
+          (bounds1.top >= bounds2AdjustedTop &&
+            bounds1.top <= bounds2FullHeightAdjustedTop)) &&
+        ((bounds1.left <= bounds2AdjustedLeft &&
+          bounds2AdjustedLeft <= d1_distance_from_left) ||
+          (bounds1.left >= bounds2AdjustedLeft &&
+            bounds1.left <= bounds2FullWidthAdjustedLeft));
   
       return gapWouldHaveBeenCreated;
       // Return whether it IS colliding
@@ -246,10 +243,10 @@ export class GroupLayoutResolver {
       var d2_distance_from_left = bounds2.left + d2_width;
   
       var not_colliding =
-        d1_distance_from_top < bounds2.top ||
-        bounds1.top > d2_distance_from_top ||
-        d1_distance_from_left < bounds2.left ||
-        bounds1.left > d2_distance_from_left;
+        d1_distance_from_top <= bounds2.top ||
+        bounds1.top >= d2_distance_from_top ||
+        d1_distance_from_left <= bounds2.left ||
+        bounds1.left >= d2_distance_from_left;
   
       // Return whether it IS colliding
       return !not_colliding;
