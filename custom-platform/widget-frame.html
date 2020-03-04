@@ -77,11 +77,17 @@
                 moveIndependently: true
             };
             let ladderExpanded = false;
+
+            if(state !== undefined && state.ladderExpanded !== undefined) {
+                ladderExpanded = state.ladderExpanded;
+            }
+
             ladder.onclick = async () => {
                 ladderExpanded = !ladderExpanded;
                 let width = 0;
                 let height = ladderExpanded ? 200 : -200;
                 await finWindow.resizeBy(width, height, "top-left", resizeOptions);
+                setState("ladderExpanded", ladderExpanded);
             };
 
             window.opener && window.opener.addEventListener('beforeunload', () => finWindow.close());
