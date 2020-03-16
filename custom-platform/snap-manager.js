@@ -126,7 +126,7 @@ class SimpleDockingEngine {
 
     getTopDockPosition(source, target) {
         return {
-            top: target.top - source.height,
+            top: target.top - source.height -1,
             left: target.left,
             height: source.height,
             width: target.width
@@ -135,7 +135,7 @@ class SimpleDockingEngine {
 
     getBottomDockPosition(source, target) {
         return {
-            top: target.top + target.height,
+            top: target.top + target.height + 1,
             left: target.left,
             height: source.height,
             width: target.width
@@ -145,7 +145,7 @@ class SimpleDockingEngine {
     getLeftDockPosition(source, target) {
         return {
             top: target.top,
-            left: target.left - source.width,
+            left: target.left - source.width -1,
             height: target.height,
             width: source.width
         };
@@ -154,7 +154,7 @@ class SimpleDockingEngine {
     getRightDockPosition(source, target) {
         return {
             top: target.top,
-            left: target.left + target.width,
+            left: target.left + target.width + 1,
             height: target.height,
             width: source.width
         };

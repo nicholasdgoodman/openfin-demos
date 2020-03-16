@@ -17,10 +17,11 @@ const createAppButtons = document.querySelectorAll('.start-app-button');
 const workspaceSelect = document.querySelector('#workspace-select');
 
 createAppButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        finPlatform.createWindow({
+    btn.addEventListener('click', async () => {
+        let x = await finPlatform.createWindow({
             url: 'widget-frame.html'
         });
+        console.log('launched');
     });
 });
 

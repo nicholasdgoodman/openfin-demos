@@ -10,7 +10,7 @@ const platformPromise = new Promise(resolve => {
         console.log('Platform.init');
         class Platform extends PlatformBase {
             async createWindow(opts) {
-                await fin.Window.create(Object.assign({
+                let options = Object.assign({
                     name: fin.desktop.getUuid().substr(0,7),
                     frame: false,
                     defaultHeight: 200,
@@ -18,9 +18,13 @@ const platformPromise = new Promise(resolve => {
                     contextMenu: true,
                     customData: { 
                         groupId: fin.desktop.getUuid().substr(0,7),
+                        canSnap: true,
                         state: { }
                     }
-                }, opts));
+                }, opts);
+
+                let win = await fin.Window.create(options);
+                return win;
             }
     
             async getSnapshot() {
@@ -34,9 +38,10 @@ const platformPromise = new Promise(resolve => {
                         height: w.defaultHeight,
                         width: w.defaultWidth
                     });
-                    w.opacity = (await fin.Window.wrapSync({ 
+                    let currentWindow = fin.Window.wrapSync({ 
                         uuid: fin.me.uuid, name: w.name 
-                    }).getOptions()).opacity
+                    });
+                    w.opacity = (await currentWindow.getOptions()).opacity;
                 }));
 
                 return snapshot;

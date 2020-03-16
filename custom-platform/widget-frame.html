@@ -1,39 +1,64 @@
 <html>
+
 <head>
 
 </head>
+
 <body style="margin: 1px;">
     <div style="background-color: purple; color: white; -webkit-app-region:drag;">
         Header
-        <span id="groupIdInput" style="display:inline-block; margin-left:16px; font-size: xx-small; height:16px; width:60px; border-style:none;background-color: darkmagenta; color: white;"></span>
-        <a id="groupIdClear" style="display:inline; cursor: pointer; margin-left:16px; font-size: small; color: white; -webkit-app-region:no-drag;">&#8663;</a>
+        <span id="groupIdInput"
+            style="display:inline-block; margin-left:16px; font-size: xx-small; height:16px; width:60px; border-style:none;background-color: darkmagenta; color: white;"></span>
+        <a id="groupIdClear"
+            style="display:none; cursor: pointer; margin-left:16px; font-size: small; color: white; -webkit-app-region:no-drag;">&#8663;</a>
     </div>
-    <br/>
+    <br />
     <div>Content</div>
-    <div>State<input id="textInput"/></div>
+    <div>State<input id="textInput" /></div>
+    <div><button id="ladder">Ladder</button></div>
+
     <script>
-        (async function() {
+        (async function () {
             const groupIdInput = document.querySelector('#groupIdInput');
             const groupIdClear = document.querySelector('#groupIdClear');
             const textInput = document.querySelector('#textInput');
             const finWindow = fin.Window.getCurrentSync();
-            
-            let { customData: { state, groupId }} =  await finWindow.getOptions();
+            const ladder = document.querySelector('#ladder');
+
+            let { customData: { state, groupId } } = await finWindow.getOptions();
 
             groupIdInput.innerText = groupId
             textInput.value = state.textInput || '';
 
+            const engineModule = await import('./group-layout-engine.js');
+            const resolverModule = await import('./group-layout-resolver.js');
+            // teams can swap in their own layout resolver or group layout engine by switching
+            // out the js files or replacing this script and constructing it themselves
+            const resolver = new resolverModule.GroupLayoutResolver();
+            const layoutEngine = new engineModule.GroupLayoutEngine(
+                finWindow,
+                resolver,
+                console.log
+            );
+            await layoutEngine.init(isGrouped => {
+                if (isGrouped) {
+                    groupIdClear.style.display = "inline";
+                } else {
+                    groupIdClear.style.display = "none";
+                }
+            });
+
             function setState(key, value) {
                 state[key] = value;
-                finWindow.updateOptions({ customData: { state, groupId }});
+                finWindow.updateOptions({ customData: { state, groupId } });
             }
 
             function setGroup(groupId) {
-                finWindow.updateOptions({ customData: { state, groupId }});
+                finWindow.updateOptions({ customData: { state, groupId } });
             }
 
             finWindow.addListener('options-changed', evt => {
-                let { customData: { state, groupId }} = evt.options;
+                let { customData: { state, groupId } } = evt.options;
 
                 groupIdInput.innerText = groupId;
                 textInput.value = state.textInput || '';
@@ -41,16 +66,34 @@
 
             textInput.addEventListener('input', evt => setState(textInput.id, textInput.value));
             groupIdClear.addEventListener('click', () => {
-                let newGroupId = fin.desktop.getUuid().substr(0,7);
+                let newGroupId = fin.desktop.getUuid().substr(0, 7);
                 groupIdInput.innerText = newGroupId;
                 setGroup(newGroupId);
 
                 finWindow.leaveGroup();
             });
-            
+
+            const resizeOptions = {
+                moveIndependently: true
+            };
+            let ladderExpanded = false;
+
+            if(state !== undefined && state.ladderExpanded !== undefined) {
+                ladderExpanded = state.ladderExpanded;
+            }
+
+            ladder.onclick = async () => {
+                ladderExpanded = !ladderExpanded;
+                let width = 0;
+                let height = ladderExpanded ? 200 : -200;
+                await finWindow.resizeBy(width, height, "top-left", resizeOptions);
+                setState("ladderExpanded", ladderExpanded);
+            };
+
             window.opener && window.opener.addEventListener('beforeunload', () => finWindow.close());
         })();
 
     </script>
 </body>
+
 </html>
