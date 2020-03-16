@@ -6,7 +6,11 @@
         "autoShow": true,
         "frame": false,
         "alwaysOnTop": true,
-        "maximizable": false
+        "maximizable": false,
+        "defaultHeight": 40,
+        "defaultWidth": 360,
+        "resizable": false,
+        "customData": {}
     },
     "runtime": {
         "arguments": "",

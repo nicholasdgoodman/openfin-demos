@@ -3,7 +3,7 @@ export class SnapManager {
         Object.assign(this, {
             margin: 4,
             range: 16,
-            sensitivity: 2,
+            sensitivity: 4,
             inRange: () => {},
             outOfRange: () => {}
         }, opts);
@@ -19,6 +19,10 @@ export class SnapManager {
     }
 
     drag(bounds) {
+        if(!this.engine) {
+            return;
+        }
+
         let newDockedPosition = this.engine.findDockedPosition(bounds);
 
         // Debounce logic

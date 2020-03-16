@@ -1,17 +1,42 @@
 <html>
 <head>
 <title>Platform Launchbar</title>
+<style>
+    body {
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        user-select: none;
+    }
+    button {
+        width: 54px;
+    }
+    .control-button {
+        font-family:monospace;
+        font-size: large;
+        padding: 0px 8px;
+        cursor: pointer;
+    }
+    .control-button:hover {
+        background-color: plum;
+    }
+    .drag-handle {
+        font-family:monospace;
+        -webkit-app-region: drag;
+        font-size: large;
+        padding: 0px 8px;
+    }
+</style>
 </head>
 <body>
     <script type="module" src="platform.js"></script>
-    <span style="font-family:monospace; -webkit-app-region: drag;">[&#11035;]</span>
-    <button onclick="location.reload()">Reload</button>
+    <span class="drag-handle">&#10624;</span>
+    <span class="control-button" onclick="location.reload()">&#8635;</span>
     <button class="start-app-button" data-app-name="tile">Tile</button>
     <button class="start-app-button" data-app-name="blotter">Blotter</button>
     <select id="workspace-select">
         <option value="ws1">Workspace 1</option>
         <option value="ws2">Workspace 2</option>
     </select>
+    <span id="close-button"  class="control-button">&#9746;</span>
     <script type="module" src="launcher-main.js"></script>
 </body>
 </body>
