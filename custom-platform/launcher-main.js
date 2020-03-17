@@ -1,6 +1,8 @@
 import { WorkspaceManager }  from './workspace-manager.js';
 import { SnapManager } from  './snap-manager.js';
 
+import settings from './settings.js';
+
 console.log('launcher-main.js');
 
 (async function() {
@@ -9,12 +11,11 @@ const finApp = fin.Application.getCurrentSync();
 const finWindow = fin.Window.getCurrentSync();
 const finPlatform = await window.getPlatform();
 
-finWindow.showDeveloperTools();
-
 const workspaces = new WorkspaceManager();
 
 const createAppButtons = document.querySelectorAll('.start-app-button');
 const workspaceSelect = document.querySelector('#workspace-select');
+const closeLauncherButton = document.querySelector('#close-button');
 
 createAppButtons.forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -25,16 +26,20 @@ createAppButtons.forEach(btn => {
     });
 });
 
+closeLauncherButton.addEventListener('click', () => finApp.quit({ force: true }));
+
 // Workspace Control:
 workspaceSelect.addEventListener('change', async() => {
     workspaces.selectCurrentWorkspace(workspaceSelect.value);
     let snapshot = workspaces.getCurrentWorkspace();
 
     if(snapshot) {
+        workspaceSelect.setAttribute('disabled', true);
         await finPlatform.applySnapshot({
             snapshot,
             options: { closeExistingWindows: true }
         });
+        workspaceSelect.removeAttribute('disabled');
     }
 });
 
@@ -68,11 +73,11 @@ fin.Window.create({
     showTaskbarIcon: false
 });
 
-const monitorPeriod = 250;
-let monitorHandle;
 let draggingWindow;
 
 const snapping = new SnapManager({
+    margin: settings.snapMargin,
+    sensistivity: settings.snapSensistivity,
     inRange: (evt) => {
         previewWindow.setBounds(evt.position)
     },
@@ -97,33 +102,35 @@ finApp.on('window-begin-user-bounds-changing', async (evt) => {
     let { windows } = await finPlatform.getSnapshot();
 
     let sourceWin = windows.find(win => win.name === name);
-    let targetWins = windows.filter(win => win.name !== name);
+    let targetWins = windows.filter(win => win.name !== name && win.state === 'normal');
 
-    if(targetWins.some(win => win.customData && win.customData.groupId === sourceWin.customData.groupId)) {
+    if(sourceWin && targetWins.some(win => win.customData && win.customData.groupId === sourceWin.customData.groupId)) {
         return;
     }
+
+    snapping.beginDrag(evt, targetWins);
 
     draggingWindow = Object.assign(
         fin.Window.wrapSync({ uuid, name }), { options: sourceWin }
     );
-
-    snapping.beginDrag(evt, targetWins);
-
-    monitorHandle = setInterval(async () => {
-        snapping.drag(await draggingWindow.getBounds());
-    }, monitorPeriod);
 });
+
+setInterval(async() => {
+    if(draggingWindow) {
+        let bounds = await draggingWindow.getBounds();
+        snapping.drag(bounds);
+    }
+}, settings.snapPeriod);
 
 finApp.on('window-end-user-bounds-changing', evt => {
-    if(monitorHandle !== undefined) {
-        clearInterval(monitorHandle);
+    if(draggingWindow) {
         snapping.endDrag(evt);
+        draggingWindow = undefined;
     }
-    monitorHandle = undefined;
 });
 
-
-finWindow.on('blurred', () => finWindow.updateOptions({ opacity: 0.7 }));
-finWindow.on('focused', () => finWindow.updateOptions({ opacity: 1.0 }));
+// Uncomment to make window go semi-transparent on blur:
+// finWindow.on('blurred', () => finWindow.updateOptions({ opacity: 0.7 }));
+// finWindow.on('focused', () => finWindow.updateOptions({ opacity: 1.0 }));
 
 })();

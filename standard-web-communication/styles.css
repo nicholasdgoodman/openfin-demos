@@ -1,0 +1,59 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+tile-collection {
+    display: block;
+    background-color: lightgray;
+    margin: 4px;
+    padding: 16px;
+}
+
+ticker-tile {
+    display: inline-block;
+    color: black;
+    background-color: lightsteelblue;
+    height: 80px;
+    width: 80px;
+    text-align: center;
+    margin: 8px;
+    transition: all 200ms linear;
+}
+
+ticker-tile:hover {
+    color: white;
+    background-color: purple;
+    transition: all 200ms linear;
+}
+
+ticker-tile.highlight {
+    color: white;
+    background-color: palevioletred;
+    transition: all 200ms linear;
+}
+
+order-table {
+    display: block;
+    background-color: lightgray;
+    margin: 4px;
+    padding: 16px;
+}
+
+order-row {
+    display: block;
+    background-color: lightsteelblue;
+    margin: 8px;
+    transition: all 200ms linear;
+}
+
+order-row:hover {
+    color: white;
+    background-color: purple;
+    transition: all 200ms linear;
+}
+
+order-row.highlight {
+    color: white;
+    background-color: palevioletred;
+    transition: all 200ms linear;
+}
