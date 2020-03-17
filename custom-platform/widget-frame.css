@@ -1,0 +1,23 @@
+body {
+    margin: 1px;
+}
+.title-bar {
+    background-color: purple;
+    color: white;
+    -webkit-app-region: drag;
+}
+.window-group-id {
+    display: inline-block;
+    margin-left:16px;
+    font-size: xx-small;
+    height:16px; width: 60px;
+    border-style: none;
+    background-color: darkmagenta;
+}
+.window-popout-button {
+    display: none;
+    cursor: pointer;
+    margin-left: 16px;
+    font-size: small;
+    -webkit-app-region: no-drag;
+}
