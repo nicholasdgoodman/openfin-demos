@@ -18,6 +18,7 @@ export class GroupLayoutResolver {
     }
   
     async resolve(triggerWindow, groupedWindows, change) {
+      console.log('resolve', [...arguments]);
       let windowsToMove = [];
       let windowsNotMoving = [];
       if (change.width !== 0) {
