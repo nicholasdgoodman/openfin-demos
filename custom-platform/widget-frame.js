@@ -1,6 +1,3 @@
-import { GroupLayoutResolver } from './group-layout-resolver.js';
-import { GroupLayoutEngine } from './group-layout-engine.js';
-
 (async function () {
 
 const groupIdInput = document.querySelector('#groupIdInput');
@@ -14,23 +11,6 @@ let { customData: { state, groupId } } = await finWindow.getOptions();
 groupIdInput.innerText = groupId
 textInput.value = state.textInput || '';
 
-/*
-// teams can swap in their own layout resolver or group layout engine by switching
-// out the js files or replacing this script and constructing it themselves
-const resolver = new GroupLayoutResolver();
-const layoutEngine = new GroupLayoutEngine(
-    finWindow,
-    resolver,
-    console.log
-);
-await layoutEngine.init(isGrouped => {
-    if (isGrouped) {
-        groupIdClear.style.display = "inline";
-    } else {
-        groupIdClear.style.display = null;
-    }
-});
-*/
 
 function setState(key, value) {
     state[key] = value;
@@ -42,10 +22,11 @@ function setGroup(groupId) {
 }
 
 finWindow.addListener('options-changed', evt => {
-    let { customData: { state, groupId } } = evt.options;
+    let { customData: { state, groupId, isInGroup } } = evt.options;
 
     groupIdInput.innerText = groupId;
     textInput.value = state.textInput || '';
+    groupIdClear.style.display = isInGroup ? "inline" : null;
 });
 
 textInput.addEventListener('input', evt => setState(textInput.id, textInput.value));

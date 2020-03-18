@@ -1,6 +1,9 @@
 import { WorkspaceManager }  from './workspace-manager.js';
 import { SnapManager } from  './snap-manager.js';
 
+import { GroupLayoutResolver } from './group-layout-resolver.js';
+import { GroupLayoutEngine } from './group-layout-engine.js';
+
 import settings from './settings.js';
 
 console.log('launcher-main.js');
@@ -19,10 +22,22 @@ const closeLauncherButton = document.querySelector('#close-button');
 
 createAppButtons.forEach(btn => {
     btn.addEventListener('click', async () => {
-        let x = await finPlatform.createWindow({
+        let childWindow = await finPlatform.createWindow({
             url: 'widget-frame.html'
         });
         console.log('launched');
+
+        let resolver = new GroupLayoutResolver();
+        
+        let layoutEngine = new GroupLayoutEngine({
+            platformWindow: childWindow,
+            //layoutResolver: resolver,
+            log: console.log,
+            windowResized: ({ source, group, change }) => 
+                resolver.resolve(source, group, change)
+        });
+
+        await layoutEngine.init();
     });
 });
 

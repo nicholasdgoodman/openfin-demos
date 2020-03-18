@@ -10,17 +10,20 @@ export class GroupLayoutEngine {
     _isInGroup = false;
     _onGroupStatusChanged;
   
-    constructor(platformWindow, layoutResolver, log, options = {}) {
-      if (log !== undefined) {
-        this._log = message => {
-          log("GLE:" + this._id + ":" + message);
-        };
-      } else {
-        this._log = message => {
-          console.log("GLE:" + this._id + ":" + message);
-        };
+    constructor({ platformWindow, windowResized, log, groupOptions, groupStatusChanged }) {
+      console.dir(platformWindow);
+      
+      if (platformWindow === undefined) {
+        throw new Error("You must pass a native Openfin Window");
       }
+      this._platformWindow = platformWindow;
+      
+      this._log = log ?
+        (message, ...optParams) => log(`GLE ${this._id}: ${message}`, ...optParams) :
+        () => {};
   
+      this.windowResized = windowResized || (() => {});
+      
       this._groupOptions = Object.assign({
         joinGroup: {
           maximizable: false,
@@ -36,7 +39,9 @@ export class GroupLayoutEngine {
             bottomRightCorner: 9
           }
         }
-      }, options);
+      }, groupOptions);
+
+      this._onGroupStatusChanged = groupStatusChanged;
   
       this.browserWindowResize = this.browserWindowResize.bind(this);
       this.init = this.init.bind(this);
@@ -46,29 +51,16 @@ export class GroupLayoutEngine {
       this.isNotInGroup = this.isNotInGroup.bind(this);
       this.checkLayout = this.checkLayout.bind(this);
 
-      if (platformWindow === undefined) {
-        throw new Error("You must pass a native Openfin Window");
-      }
+      this._id = platformWindow.identity.name;
 
-      if(layoutResolver === undefined) {
-        throw new Error("You must specify a layout resolver");
-      }
-
-      this._id = platformWindow.me.name;
-      this._layoutResolver = layoutResolver;
-      this._platformWindow = platformWindow;
-      this._webWindow = platformWindow.getWebWindow() ?? window;
       this._log("Constructed an instance of the group layout engine");
     }
 
     get browserWindow() {
-      if(this._webWindow !== undefined) {
-        return this._webWindow;
-      }
       return this._platformWindow.getWebWindow();
     }
   
-    async init(onGroupStatusChange) {
+    async init() {
       if (this._isInitialised) {
         this._log(
           "This instance of the group layout engine is already initialised."
@@ -76,8 +68,6 @@ export class GroupLayoutEngine {
         return;
       }
       this._isInitialised = true;
-      
-      this._onGroupStatusChanged = onGroupStatusChange;
       
       this._lastBounds = await this._platformWindow.getBounds();
       
@@ -168,9 +158,6 @@ export class GroupLayoutEngine {
     }
   
     async checkLayout() {
-      if (this._layoutResolver === undefined) {
-        throw new Error("You need to specify a group layout resolver for the group layout engine.");
-      }
       let group = await this._platformWindow.getGroup();
       if (group.length > 0) {
         let newBounds = await this._platformWindow.getBounds();
@@ -201,7 +188,12 @@ export class GroupLayoutEngine {
           newBounds
         };
         this._lastBounds = newBounds;
-        await this._layoutResolver.resolve(this._platformWindow, group, change);
+
+        await this.windowResized({
+          source: this._platformWindow,
+          group, 
+          change
+        });
       }
     }
   }
