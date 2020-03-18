@@ -1,8 +1,7 @@
 import { WorkspaceManager }  from './workspace-manager.js';
 import { SnapManager } from  './snap-manager.js';
-
-import { GroupLayoutResolver } from './group-layout-resolver.js';
-import { GroupLayoutEngine } from './group-layout-engine.js';
+import { GroupLayoutEngine } from './group-manager.js';
+import { GroupLayoutResolver } from './collision-resolver.js';
 
 import settings from './settings.js';
 

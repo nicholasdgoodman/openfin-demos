@@ -41,26 +41,20 @@ launcher-main.js
 * It also provides the functionality for saving the workspace state and launches new windows (these responsibilities could be broken out into other classes).
 
 
-group-layout-engine.js
+group-manager.js
 
-* This is a class that is passed a window to be responsible for.
 * It can be passed a function that it will call when a window becomes part of a group and when it leaves a group (it handles the extra notifications that the standard group event sends out so you are only notified when it counts).
 * When a window that is watched becomes part of a group it disables manual resizing and being maximisable. It restores these settings when it is no longer part of a group (the actual settings can be customised)
 * When a window that is watched resizes (programatically e.g. button click to expand the window) it passes the information to a group-layout-resolver (the window that changed, the windows in the group and the change that happened). The idea is that the group-layout-resolver can then re-position the other windows in the group if that is what you want.
 
-group-layout-resolver.js
+collision-resolver.js
 
-* An instance of this class is passed to the group-layout-engine. It has a resolve function. This resolve function is passed information about the changes and moves the windows in the group if it needs to. 
+* This helper class is utilized after a grouped window has changed size or position. It has a resolve function that will attempt to resolve any collisions that have occurred as the result of a window resize event.
 * This class is a work in progress with many edge cases but gives an idea of what can be done. This is one of the classes that would be implemented by a team to suit their needs (should a window overlay another window in the group? should it push all windows down? should it reflow all windows to avoid gaps?).
-
-bind-group-layout.js
-
-* This is just an example of a script that could be added to a windows html in order to wire up the group layout engine. This example does not make use of the callback that would allow you to update an icon to show if a window is grouped.
 
 widget-frame.html
 
 * This is an example of a window that has a control for ungrouping a window.
-* It wires up the group layout engine and resolver and controls the visibility of the ungroup button with a callback.
 * It has a ladder button that expands and contracts the size of the window (this is to demonstrate the resolver).
 * It also shows an important option to specify when resizing a window: moveIndependently: true (this gives you control over what should happen to the other windows in the group with the resolver).
 
