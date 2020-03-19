@@ -21,6 +21,6 @@ openfin -l -c http://localhost:5001/platform.json
 
 Alternatively, it is possible to see the combined app or the individual compoents in a browser at the following URLs:
 
-- http://localhost:5001/index.html
-- http://localhost:5001/index.html/tiles
-- http://localhost:5001/index.html/orders
+- http://localhost:5001/
+- http://localhost:5001/tiles
+- http://localhost:5001/orders
