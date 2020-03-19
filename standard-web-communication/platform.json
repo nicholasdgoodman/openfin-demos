@@ -38,7 +38,7 @@
                                             "type": "component",
                                             "componentName": "view",
                                             "componentState": {
-                                                "url": "http://localhost:5001/?tiles",
+                                                "url": "http://localhost:5001/tiles",
                                                 "name": "Tiles"
                                             },
                                             "isClosable": true,
@@ -59,7 +59,7 @@
                                             "type": "component",
                                             "componentName": "view",
                                             "componentState": {
-                                                "url": "http://localhost:5001/?orders",
+                                                "url": "http://localhost:5001/orders",
                                                 "name": "Orders"
                                             },
                                             "isClosable": true,

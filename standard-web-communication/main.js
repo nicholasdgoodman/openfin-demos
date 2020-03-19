@@ -6,8 +6,9 @@ let data = await (await fetch('./data.json')).json();
 
 // Normally we might control this with URL Routes (e.g. React Router)
 // but for this sample, just use query strings in the URL
-let showTiles = !location.search || location.search.includes('tiles');
-let showOrders = !location.search || location.search.includes('orders');
+let showAll = location.pathname === '/';
+let showTiles = showAll || location.pathname === '/tiles';
+let showOrders = showAll || location.pathname === '/orders';
 
 if(showTiles) {
     let tileCollection = document.createElement('tile-collection');
