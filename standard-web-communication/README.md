@@ -9,7 +9,7 @@ The purpose of this sample is to illustrate using standard web APIs to communica
 
 _Shows both components within a single OpenFin Window_
 ```
-http-server -p 5001 -c-1
+http-server -p 5001 -c-1 --proxy http://localhost:5001?
 openfin -l -c http://localhost:5001/app.json
 ```
 

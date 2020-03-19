@@ -3,7 +3,7 @@
     "startup_app": {
         "name": "OpenfinPOC",
         "description": "OpenFin POC",
-        "url": "http://localhost:5001/index.html",
+        "url": "http://localhost:5001/",
         "uuid": "openfin-broadcasting",
         "autoShow": true
     },
