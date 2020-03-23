@@ -2,6 +2,7 @@ import { WorkspaceManager }  from './workspace-manager.js';
 import { SnapManager } from  './snap-manager.js';
 import { GroupLayoutEngine } from './group-manager.js';
 import { GroupLayoutResolver } from './collision-resolver.js';
+import { LayoutToPlatform } from './layout-to-platform.js';
 
 import settings from './settings.js';
 
@@ -16,8 +17,25 @@ const finPlatform = await window.getPlatform();
 const workspaces = new WorkspaceManager();
 
 const createAppButtons = document.querySelectorAll('.start-app-button');
+const loadLayoutV1Button = document.querySelector('#load-layoutv1');
 const workspaceSelect = document.querySelector('#workspace-select');
 const closeLauncherButton = document.querySelector('#close-button');
+
+const layoutV1 = localStorage.getItem("layoutv1-snapshot");
+
+if(layoutV1 !== undefined && layoutV1 !== null) {
+    loadLayoutV1Button.style.display = null;
+}
+
+
+loadLayoutV1Button.addEventListener('click', async ()=> {
+  
+        let snapshot = await LayoutToPlatform(JSON.parse(layoutV1));
+        await finPlatform.applySnapshot({
+            snapshot,
+            options: { closeExistingWindows: true }
+        });
+});
 
 createAppButtons.forEach(btn => {
     btn.addEventListener('click', async () => {

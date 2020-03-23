@@ -29,14 +29,15 @@
 <body>
     <script type="module" src="platform.js"></script>
     <span class="drag-handle">&#10624;</span>
-    <span class="control-button" onclick="location.reload()">&#8635;</span>
-    <button class="start-app-button" data-app-name="tile">Tile</button>
-    <button class="start-app-button" data-app-name="blotter">Blotter</button>
+    <span class="control-button" onclick="location.reload()" title="Reload Launcher">&#8635;</span>
+    <button class="start-app-button" data-app-name="tile" title="Launch Tile">Tile</button>
+    <button class="start-app-button" data-app-name="blotter" title="Launch Blotter">Blotter</button>
     <select id="workspace-select">
         <option value="ws1">Workspace 1</option>
         <option value="ws2">Workspace 2</option>
     </select>
-    <span id="close-button"  class="control-button">&#9746;</span>
+    <span class="control-button" id="load-layoutv1" style='display:none;color:green' title="Load Saved Layout V1 Snapshot">&#10697;</span>
+    <span id="close-button"  class="control-button" title="Close Application">&#9746;</span>
     <script type="module" src="launcher-main.js"></script>
 </body>
 </body>

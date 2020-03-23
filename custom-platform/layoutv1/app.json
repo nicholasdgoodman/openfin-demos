@@ -1,0 +1,31 @@
+{
+  "devtools_port": 9090,
+  "startup_app": {
+    "name": "OpenFin Sample Layout v1",
+    "description": "OpenFin Sample Layout v1",
+    "url": "http://localhost:5001/layoutv1/launcher-main.html",
+    "uuid": "openfin-sample-layout-dsifuou",
+    "autoShow": true,
+    "alwaysOnTop": true,
+    "maximizable": false,
+    "defaultWidth": 400,
+    "defaultHeight": 40,
+    "applicationIcon": "http://localhost:5001/favicon.ico",
+    "frame": false
+  },
+  "runtime": {
+    "version": "15.80.50.11"
+  },
+  "services": [
+    {
+      "name": "layouts",
+      "config": {
+        "features": {
+          "snap": true,
+          "dock": true,
+          "tab": false
+        }
+      }
+    }
+  ]
+}
