@@ -6,7 +6,9 @@ const textInput = document.querySelector('#textInput');
 const finWindow = fin.Window.getCurrentSync();
 const ladder = document.querySelector('#ladder');
 
-let { customData: { state, groupId } } = await finWindow.getOptions();
+let { customData: { state, groupId, isInGroup } } = await finWindow.getOptions();
+
+groupIdClear.style.display = isInGroup ? "inline" : null;
 
 groupIdInput.innerText = groupId
 textInput.value = state.textInput || '';
