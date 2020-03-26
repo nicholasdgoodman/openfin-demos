@@ -1,21 +1,49 @@
+import { getPlatform } from './platform.js';
+
 export class SnapManager {
     constructor(opts) {
         Object.assign(this, {
             margin: 4,
             range: 16,
             sensitivity: 4,
+            snapPeriod: 200,
             inRange: () => {},
             outOfRange: () => {}
         }, opts);
 
         this.engine = undefined;
+        this.draggingWindow = undefined;
         this.dockedPosition = undefined;
         this.dockCount = 0;
         this.isInRange = false;
+
+        //TODO: this interval is never cleared - results in a leak
+        setInterval(async() => {
+            if(this.draggingWindow) {
+                let bounds = await this.draggingWindow.getBounds();
+                this.drag(bounds);
+            }
+        }, this.snapPeriod);
     }
 
-    beginDrag(bounds, targetBounds) {
-        this.engine = new SimpleDockingEngine(bounds, targetBounds);
+    async beginDrag(source) {
+        let platform = await getPlatform();
+
+        let { uuid, name } = source;
+        let { windows } = await platform.getSnapshot();
+    
+        let sourceWin = windows.find(win => win.name === name);
+        let targetWins = windows.filter(win => win.name !== name && win.state === 'normal');
+    
+        if(sourceWin && targetWins.some(win => win.customData && win.customData.groupId === sourceWin.customData.groupId)) {
+            return;
+        }
+    
+        this.engine = new SimpleSnapEngine(source, targetWins);
+    
+        this.draggingWindow = Object.assign(
+            fin.Window.wrapSync({ uuid, name }), { options: sourceWin }
+        );
     }
 
     drag(bounds) {
@@ -45,123 +73,99 @@ export class SnapManager {
         }
     }
 
-    endDrag(bounds) {
+    endDrag(source) {
         if(this.dockedPosition && this.dockCount >= this.sensitivity) {
-            this.onDock(this.dockedPosition);
+            this.onSnap(this.dockedPosition);
         }
 
         this.dockCount = 0;
         this.dockedPosition = undefined;
         this.engine = undefined;
+        this.draggingWindow = undefined;
     }
 }
 
 // borrowed from another project
-class SimpleDockingEngine {
+class SimpleSnapEngine {
     constructor(source, targets) {
         this.snapRange = 32;
         this.snapMargin = 0.60;
 
         this.snapMap = [];
 
-        targets.forEach(target => {
+        let snapKinds = [ 'top', 'bottom', 'left', 'right' ];
+
+        targets.forEach(target => snapKinds.forEach(kind => {
             this.snapMap.push({
-                type: 'top',
+                type: kind,
+                source,
                 target,
-                zone: this.getTopDockZone(source, target),
-                position: this.getTopDockPosition(source, target)
+                zone: this.getDockZone(source, target, kind),
+                position: this.getDockPosition(source, target, kind)
             });
-            this.snapMap.push({
-                type: 'bottom',
-                target,
-                zone: this.getBottomDockZone(source, target),
-                position: this.getBottomDockPosition(source, target)
-            });
-            this.snapMap.push({
-                type: 'right',
-                target,
-                zone: this.getRightDockZone(source, target),
-                position: this.getRightDockPosition(source, target)
-            });
-            this.snapMap.push({
-                type: 'left',
-                target,
-                zone: this.getLeftDockZone(source, target),
-                position: this.getLeftDockPosition(source, target)
-            });
-        });
+        }));
     }
 
-    getTopDockZone(source, target) {
-        return {
-            top: target.top - source.height - this.snapRange,
-            left: target.left + this.snapMargin * target.width - source.width,
-            height: 2 * this.snapRange,
-            width: target.width + source.width - 2 * target.width * this.snapMargin
-        };
+    getDockZone(source, target, kind) {
+        let zones = {
+            top: {
+                top: target.top - source.height - this.snapRange,
+                left: target.left + this.snapMargin * target.width - source.width,
+                height: 2 * this.snapRange,
+                width: target.width + source.width - 2 * target.width * this.snapMargin
+            },
+            bottom: {
+                top: (target.top + target.height) - this.snapRange,
+                left: target.left + this.snapMargin * target.width - source.width,
+                height: 2 * this.snapRange,
+                width: target.width + source.width - 2 * target.width * this.snapMargin
+            },
+            left: {
+                top: target.top + this.snapMargin * target.height - source.height,
+                left: target.left - source.width - this.snapRange,
+                height: target.height + source.height - 2 * target.height * this.snapMargin,
+                width: 2 * this.snapRange
+            },
+            right: {
+                top: target.top + this.snapMargin * target.height - source.height,
+                left: (target.left + target.width) - this.snapRange,
+                height: target.height + source.height - 2 * target.height * this.snapMargin,
+                width: 2 * this.snapRange
+            }
+        }
+        
+        return zones[kind];
     }
 
-    getBottomDockZone(source, target) {
-        return {
-            top: (target.top + target.height) - this.snapRange,
-            left: target.left + this.snapMargin * target.width - source.width,
-            height: 2 * this.snapRange,
-            width: target.width + source.width - 2 * target.width * this.snapMargin
+    getDockPosition(source, target, kind) {
+        let positions = {
+            top: {
+                top: target.top - source.height -1,
+                left: target.left,
+                height: source.height,
+                width: target.width
+            },
+            bottom: {
+                top: target.top + target.height + 1,
+                left: target.left,
+                height: source.height,
+                width: target.width
+            },
+            left: {
+                top: target.top,
+                left: target.left - source.width -1,
+                height: target.height,
+                width: source.width
+            },
+            right: {
+                top: target.top,
+                left: target.left + target.width + 1,
+                height: target.height,
+                width: source.width
+            }
         };
-    }
 
-    getLeftDockZone(source, target) {
-        return {
-            top: target.top + this.snapMargin * target.height - source.height,
-            left: target.left - source.width - this.snapRange,
-            height: target.height + source.height - 2 * target.height * this.snapMargin,
-            width: 2 * this.snapRange
-        };
-    }
-
-    getRightDockZone(source, target) {
-        return {
-            top: target.top + this.snapMargin * target.height - source.height,
-            left: (target.left + target.width) - this.snapRange,
-            height: target.height + source.height - 2 * target.height * this.snapMargin,
-            width: 2 * this.snapRange
-        };
-    }
-
-    getTopDockPosition(source, target) {
-        return {
-            top: target.top - source.height -1,
-            left: target.left,
-            height: source.height,
-            width: target.width
-        };
-    }
-
-    getBottomDockPosition(source, target) {
-        return {
-            top: target.top + target.height + 1,
-            left: target.left,
-            height: source.height,
-            width: target.width
-        };
-    }
-
-    getLeftDockPosition(source, target) {
-        return {
-            top: target.top,
-            left: target.left - source.width -1,
-            height: target.height,
-            width: source.width
-        };
-    }
-
-    getRightDockPosition(source, target) {
-        return {
-            top: target.top,
-            left: target.left + target.width + 1,
-            height: target.height,
-            width: source.width
-        };
+        return positions[kind];
     }
 
     findDockedPosition(bounds) {

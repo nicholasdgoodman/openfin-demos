@@ -1,6 +1,11 @@
-export class GroupLayoutEngine {
-    _layoutResolver;
-    _log;
+import { getLogger } from './logging.js';
+const logger = getLogger();
+
+function gleLog(message, ...optParams) {
+  logger.log(`GLE ${this._id}: ${message}`, ...optParams);
+}
+
+export class GroupManager {
     _lastBounds;
     _isInitialised = false;
     _platformWindow;
@@ -10,19 +15,13 @@ export class GroupLayoutEngine {
     _isInGroup = false;
     _onGroupStatusChanged;
   
-    constructor({ platformWindow, windowResized, log, groupOptions, groupStatusChanged }) {
-      console.dir(platformWindow);
-      
+    constructor({ platformWindow, layoutChanged, groupOptions, groupStatusChanged }) {      
       if (platformWindow === undefined) {
         throw new Error("You must pass a native Openfin Window");
       }
       this._platformWindow = platformWindow;
-      
-      this._log = log ?
-        (message, ...optParams) => log(`GLE ${this._id}: ${message}`, ...optParams) :
-        () => {};
   
-      this.windowResized = windowResized || (() => {});
+      this.layoutChanged = layoutChanged || (() => {});
       
       this._groupOptions = Object.assign({
         joinGroup: {
@@ -47,13 +46,13 @@ export class GroupLayoutEngine {
       this.init = this.init.bind(this);
       this.addListeners = this.addListeners.bind(this);
       this.groupChanged = this.groupChanged.bind(this);
-      this.isInGroup = this.isInGroup.bind(this);
-      this.isNotInGroup = this.isNotInGroup.bind(this);
+      this.setGroupState = this.setGroupState.bind(this);
+      this.clearGroupState = this.clearGroupState.bind(this);
       this.checkLayout = this.checkLayout.bind(this);
 
       this._id = platformWindow.identity.name;
 
-      this._log("Constructed an instance of the group layout engine");
+      gleLog.call(this, "Constructed an instance of the group layout engine");
     }
 
     get browserWindow() {
@@ -62,9 +61,7 @@ export class GroupLayoutEngine {
   
     async init() {
       if (this._isInitialised) {
-        this._log(
-          "This instance of the group layout engine is already initialised."
-        );
+        gleLog.call(this, "This instance of the group layout engine is already initialised.");
         return;
       }
       this._isInitialised = true;
@@ -77,23 +74,22 @@ export class GroupLayoutEngine {
       let isInGroup = options.customData !== undefined && options.customData.isInGroup === true;
       
       if(isInGroup || await this._platformWindow.getGroup().length > 0) {
-        this._log("Already in a group. Setting up listeners.");
-         await this.isInGroup();
+        gleLog.call(this, "Already in a group. Setting up listeners.");
+         await this.setGroupState();
       }
 
       this._platformWindow.on('close-requested', async () => {
         await this.removeListeners();
-
         this._platformWindow.close(true);
       });
 
-      this._log("Initialised");
+      gleLog.call(this, "Initialised");
     }
   
     async addListeners(platformWindow) {
       await platformWindow.addListener(
         "group-changed",
-        this.groupChanged.bind(this)
+        this.groupChanged
       );
     }
 
@@ -107,7 +103,7 @@ export class GroupLayoutEngine {
       
       await this._platformWindow.removeListener(
         "group-changed",
-        this.groupChanged.bind(this)
+        this.groupChanged
       );
     }
   
@@ -120,21 +116,21 @@ export class GroupLayoutEngine {
   
     async groupChanged(event) {
       if (event.reason === "join" && !this._isInGroup) {
-        this._log(
+        gleLog.call(this, 
           "This window is joining a group. Locking manual resize and listening to browser window resize events."
         );
   
-        await this.isInGroup();
+        await this.setGroupState();
       } else if (this._isInGroup && event.reason === "leave" && 
       (event.targetWindowName === this._id || (event.sourceGroup.length === 1 && event.sourceGroup[0].windowName  === this._id))) {
-        this._log(
+        gleLog.call(this, 
           "This window is leaving a group. Restoring manual resize and removeing listener for browser resize events."
         );
-       await this.isNotInGroup();
+       await this.clearGroupState();
       }
     }
 
-    async isInGroup(){
+    async setGroupState() {
       this._isInGroup = true;
       this.browserWindow.addEventListener("resize", this.browserWindowResize);
       
@@ -145,7 +141,7 @@ export class GroupLayoutEngine {
       }
     }
 
-    async isNotInGroup(){
+    async clearGroupState(){
       this._isInGroup = false;
       this.browserWindow.removeEventListener(
         "resize",
@@ -189,7 +185,7 @@ export class GroupLayoutEngine {
         };
         this._lastBounds = newBounds;
 
-        await this.windowResized({
+        await this.layoutChanged({
           source: this._platformWindow,
           group, 
           change
