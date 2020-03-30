@@ -1,5 +1,7 @@
+import { getPlatform } from './platform.js';
+
 export async function LayoutToPlatform(layout) {
-    const finPlatform = await window.getPlatform();
+    const finPlatform = await getPlatform();
     let newSnapshot = await finPlatform.getSnapshot();
     
     let uuid = newSnapshot.windows[0].uuid;

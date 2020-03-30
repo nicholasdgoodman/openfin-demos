@@ -98,4 +98,4 @@ This converts a layoutv1 object to a platform object so that the customised plat
 
 This gives an example of how you could convert existing snapshots for when you migrate users from layouts v1 to platform.
 
-
+[![Click to watch on Vimeo](OpenFin-Layout-To-Platform-Migration-Preview.png)](https://vimeo.com/402123603)

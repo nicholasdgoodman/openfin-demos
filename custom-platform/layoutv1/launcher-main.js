@@ -1,6 +1,9 @@
-import { WorkspaceManager } from '../workspace-manager.js';
+import { WorkspaceManager } from './workspace-manager.js';
+import { setLogger, getLogger } from '../logging.js';
 
-console.log('launcher-main.js');
+const logger = getLogger();
+setLogger(console);
+logger.log('launcher-main.js');
 
 (async function () {
 
@@ -14,8 +17,7 @@ console.log('launcher-main.js');
     const saveLayoutV1Button = document.querySelector('#save-layoutv1');
 
     saveLayoutV1Button.addEventListener('click', async () => {
-        let snapshot = await window.layouts.workspaces.generate();
-        localStorage.setItem('layoutv1-snapshot', JSON.stringify(snapshot));
+        workspaces.saveCurrentWorkspace(true);
     });
 
     createAppButtons.forEach(btn => {
@@ -34,7 +36,7 @@ console.log('launcher-main.js');
                     state: {}
                 }
             });
-            console.log('launched');
+            logger.log('launched');
         });
     });
 
@@ -42,26 +44,20 @@ console.log('launcher-main.js');
 
     // Workspace Control:
     workspaceSelect.addEventListener('change', async () => {
-        workspaces.selectCurrentWorkspace(workspaceSelect.value);
-        let snapshot = workspaces.getCurrentWorkspace();
-
-        if (snapshot) {
-            workspaceSelect.setAttribute('disabled', true);
-            await window.layouts.workspaces.restore(snapshot);
-            workspaceSelect.removeAttribute('disabled');
-        }
+        workspaceSelect.setAttribute('disabled', true);
+        await workspaces.selectCurrentWorkspace(workspaceSelect.value);
+        workspaceSelect.removeAttribute('disabled');
     });
 
     workspaceSelect.dispatchEvent(new Event('change'));
 
-    const setCurrentWorkspace = async () => {
-        let snapshot = await window.layouts.workspaces.generate();
-        workspaces.setCurrentWorkspace(snapshot);
-    };
+    finApp.on('window-end-user-bounds-changing', async () => {
+        workspaces.saveCurrentWorkspace();
+    });
 
-    finApp.on('window-end-user-bounds-changing', setCurrentWorkspace);
-
-    finApp.on('window-options-changed', setCurrentWorkspace);
+    finApp.on('window-options-changed', async () => {
+        workspaces.saveCurrentWorkspace();
+    });
 
 
     window.layouts.workspaces.setRestoreHandler(window.layouts.restoreHelpers.standardRestoreHandler);
