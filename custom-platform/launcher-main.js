@@ -128,5 +128,4 @@ finApp.on('window-end-user-bounds-changing', evt => {
 // Uncomment to make window go semi-transparent on blur:
 // finWindow.on('blurred', () => finWindow.updateOptions({ opacity: 0.7 }));
 // finWindow.on('focused', () => finWindow.updateOptions({ opacity: 1.0 }));
-
 })();
