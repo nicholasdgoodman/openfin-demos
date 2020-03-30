@@ -4,7 +4,7 @@ export class WorkspaceManager {
     constructor() {
         this.workspaces = {};
         this.currentWorkspace = '';
-    }
+     }
 
     set(name, workspace) {
         this.workspaces[name] = workspace;

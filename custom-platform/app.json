@@ -1,14 +1,14 @@
 {
     "devtools_port": 9090,
     "platform": {
-        "uuid": "app-launcher",
+        "uuid": "app-launcher-1",
         "providerUrl": "http://localhost:5001/launcher-main.html",
         "autoShow": true,
         "frame": false,
         "alwaysOnTop": true,
         "maximizable": false,
         "defaultHeight": 40,
-        "defaultWidth": 360,
+        "defaultWidth": 380,
         "resizable": false,
         "customData": {}
     },
