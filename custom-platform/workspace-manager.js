@@ -1,3 +1,5 @@
+import { getPlatform } from './platform.js';
+
 export class WorkspaceManager {
     constructor() {
         this.workspaces = {};
@@ -12,12 +14,27 @@ export class WorkspaceManager {
         return this.workspaces[name];
     }
 
-    selectCurrentWorkspace(name) {
+    async selectCurrentWorkspace(name) {
         this.currentWorkspace = name;
+
+        let snapshot = this.getCurrentWorkspace();
+        if(snapshot) {
+            let platform = await getPlatform();
+            await platform.applySnapshot({
+                snapshot,
+                options: { closeExistingWindows: true }
+            });
+        }
     }
 
     setCurrentWorkspace(workspace) {
         this.set(this.currentWorkspace, workspace);
+    }
+
+    async saveCurrentWorkspace() {
+        let platform = await getPlatform();
+        let snapshot = await platform.getSnapshot();
+        this.setCurrentWorkspace(snapshot);
     }
 
     getCurrentWorkspace() {

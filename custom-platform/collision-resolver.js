@@ -1,4 +1,4 @@
-export class GroupLayoutResolver {
+export class CollisionResolver {
     constructor(hasOverlap, hasGap, log) {
       if (log !== undefined) {
         this._log = log;
