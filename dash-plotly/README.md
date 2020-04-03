@@ -22,7 +22,7 @@ python app.py
 and elsewhere start OpenFin instead of a browser:
 
 ```
-openfin -l http://localhost:8050/app.json
+openfin -l http://localhost:8050/platform.json
 ```
 
 ## Summary of Functionality
