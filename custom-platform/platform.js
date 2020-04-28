@@ -6,11 +6,16 @@ const platformWin = fin.Window.getCurrentSync();
 platformWin.on('close-requested', () => { });
 
 let getPlatformP;
+let nativeHelper;
+
+fin.System.launchExternalProcess({alias: 'native-helper', arguments: fin.desktop.getVersion()});
+fin.InterApplicationBus.Channel.connect('native-platform-helper').then(client => nativeHelper = client);
 
 export async function getPlatform() {
     return getPlatformP || (getPlatformP = new Promise(resolve => {
         fin.Platform.init({ overrideCallback: async (PlatformBase) => {
             console.log('Platform.init');
+
             class Platform extends PlatformBase {
                 async createWindow(opts) {
                     let options = Object.assign({
@@ -45,13 +50,30 @@ export async function getPlatform() {
                             uuid: fin.me.uuid, name: w.name 
                         });
                         w.opacity = (await currentWindow.getOptions()).opacity;
+                        w.nativeId = await currentWindow.getNativeId();
                     }));
-    
+
+                    // If available, native helper will sort windows by Z-order,
+                    // obtain physical (unscaled) coordinates, perform overlap / edge detection,
+                    // and supply additional unscaled monitor info.
+                    if(nativeHelper) {
+                        snapshot = await nativeHelper.dispatch('getSnapshotEx', snapshot);
+                    }
+                    
                     return snapshot;
                 }
     
                 async applySnapshot({ snapshot, options }){
-                    await super.applySnapshot({ snapshot, options });
+                    let { windows, snapshotDetails } = snapshot;
+
+                    await super.applySnapshot({ snapshot : {
+                        windows: [...windows].reverse(),
+                        snapshotDetails
+                    }, options });
+
+                    if(nativeHelper) {
+                        await nativeHelper.dispatch('applySnapshotEx', snapshot);
+                    }
                     
                     let groups = snapshot.windows.reduce((groups, window) => {
                         let groupId = window.customData && window.customData.groupId;
@@ -74,7 +96,7 @@ export async function getPlatform() {
                     });
                 }
             }
-            let platform = new Platform()
+            let platform = new Platform();
             resolve(platform)
             return platform;
         }});

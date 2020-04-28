@@ -10,12 +10,26 @@
         "defaultHeight": 40,
         "defaultWidth": 360,
         "resizable": false,
-        "customData": {}
+        "customData": {},
+        "permissions": {
+            "System": {
+                "launchExternalProcess": true
+            }
+        }
     },
     "runtime": {
         "arguments": "",
-        "version": "15.80.50.11"
+        "version": "alpha"
     },
+    "appAssets":[
+        {
+            "alias": "native-helper",
+            "version": "0.0.1",
+            "src": "http://localhost:5001/native/NativeHelper.zip",
+            "target": "NativeHelper.exe",
+            "forceDownload": true
+        }
+    ],
     "shortcut": {
         "company": "OpenFin",
         "description": "Openfin POC",

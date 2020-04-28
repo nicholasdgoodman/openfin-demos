@@ -90,7 +90,8 @@ const snapping = new SnapManager({
     margin: settings.snapMargin,
     sensistivity: settings.snapSensistivity,
     inRange: (evt) => {
-        previewWindow.setBounds(evt.position)
+        previewWindow.setBounds(evt.position);
+        previewWindow.setBounds(evt.position);
     },
     outOfRange: () => {
         previewWindow.setBounds({ top: minInt, left: minInt });
