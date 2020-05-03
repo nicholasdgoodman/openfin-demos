@@ -56,6 +56,11 @@ workspaceSelect.addEventListener('change', async() => {
 
 workspaceSelect.dispatchEvent(new Event('change'));
 
+// --- synthetic event:
+fin.InterApplicationBus.subscribe({ uuid: finApp.identity.uuid }, 'window-end-user-bounds-changing', async () => {
+    workspaces.saveCurrentWorkspace();
+});
+
 finApp.on('window-end-user-bounds-changing', async () => {
     workspaces.saveCurrentWorkspace();
 });
@@ -123,6 +128,15 @@ finApp.on('window-begin-user-bounds-changing', async (evt) => {
 });
 
 finApp.on('window-end-user-bounds-changing', evt => {
+    snapping.endDrag(evt)
+});
+
+// --- synthetic event:
+fin.InterApplicationBus.subscribe({ uuid: finApp.identity.uuid }, 'window-begin-user-bounds-changing', async (evt) => {
+    await snapping.beginDrag(evt);
+});
+// --- synthetic event:
+fin.InterApplicationBus.subscribe({ uuid: finApp.identity.uuid }, 'window-end-user-bounds-changing', evt => {
     snapping.endDrag(evt)
 });
 

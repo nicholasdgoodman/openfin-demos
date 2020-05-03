@@ -40,6 +40,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\DragEventArgs.cs" />
+    <Compile Include="DTO\Snapshot.cs" />
+    <Compile Include="LayoutEngine.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

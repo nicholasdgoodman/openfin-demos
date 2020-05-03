@@ -1,10 +1,12 @@
 (async function () {
 
 const groupIdInput = document.querySelector('#groupIdInput');
-const groupIdClear = document.querySelector('#groupIdClear');
+const changeGroupId = document.querySelector('#changeGroupId');
 const textInput = document.querySelector('#textInput');
 const finWindow = fin.Window.getCurrentSync();
 const ladder = document.querySelector('#ladder');
+
+const dragRegions = document.querySelectorAll('.drag');
 
 let { customData: { state, groupId } } = await finWindow.getOptions();
 
@@ -26,11 +28,10 @@ finWindow.addListener('options-changed', evt => {
 
     groupIdInput.innerText = groupId;
     textInput.value = state.textInput || '';
-    groupIdClear.style.display = isInGroup ? "inline" : null;
 });
 
 textInput.addEventListener('input', evt => setState(textInput.id, textInput.value));
-groupIdClear.addEventListener('click', () => {
+changeGroupId.addEventListener('click', () => {
     let newGroupId = fin.desktop.getUuid().substr(0, 7);
     groupIdInput.innerText = newGroupId;
     setGroup(newGroupId);
@@ -54,6 +55,52 @@ ladder.onclick = async () => {
     await finWindow.resizeBy(width, height, "top-left", resizeOptions);
     setState("ladderExpanded", ladderExpanded);
 };
+
+dragRegions.forEach(dragRegion => {
+    let isDragging = false;
+    function onBeginDrag() {
+        fin.InterApplicationBus.publish('window-begin-user-bounds-changing', {
+            left: window.screenLeft,
+            top: window.screenTop,
+            height: window.outerHeight,
+            width: window.outerWidth,
+            reason: 'synthetic',
+            uuid: fin.me.identity.uuid,
+            name: fin.me.identity.name
+        });
+        isDragging = true;
+    }
+
+    function onEndDrag() {
+        fin.InterApplicationBus.publish('window-end-user-bounds-changing', {
+            left: window.screenLeft,
+            top: window.screenTop,
+            height: window.outerHeight,
+            width: window.outerWidth,
+            uuid: fin.me.identity.uuid,
+            name: fin.me.identity.name
+        });
+        isDragging = false;
+    }
+
+    dragRegion.addEventListener('mousedown', evt => { 
+        onBeginDrag();
+        evt.stopPropagation();
+        evt.preventDefault();
+    });
+
+    dragRegion.addEventListener('mouseup', evt => {
+        if(isDragging) {
+            onEndDrag();
+        }
+    });
+
+    dragRegion.addEventListener('mouseenter', evt => {
+        if(isDragging && evt.which === 0) {
+            onEndDrag();
+        }
+    });
+});
 
 window.opener && window.opener.addEventListener('beforeunload', () => finWindow.close());
 

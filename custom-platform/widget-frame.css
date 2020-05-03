@@ -1,13 +1,21 @@
 html {
-    border: 1px solid #cccccc;
+    border: 0px solid #cccccc;
 }
 body {
-    margin: 1px;
+    margin: 0px;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.content {
+    padding: 0px;
 }
 .title-bar {
     background-color: purple;
     color: white;
-    -webkit-app-region: drag;
+    /*-webkit-app-region: drag;*/
 }
 .window-group-id {
     display: inline-block;
@@ -18,9 +26,74 @@ body {
     background-color: darkmagenta;
 }
 .window-popout-button {
-    display: none;
     cursor: pointer;
     margin-left: 16px;
     font-size: small;
     -webkit-app-region: no-drag;
 }
+
+  .resize-border {
+    position: absolute;
+  }
+  .resize-border-top {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px; /* 5px for the mouse cursor update size */
+    border-top: 1px solid rgba(204,31,48,1); /* 1px for the "border" size */
+    cursor: n-resize;
+  }
+  .resize-border-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px; /* 5px for the mouse cursor update size */
+    border-bottom: 1px solid rgba(204,31,48,1); /* 1px for the "border" size */
+    cursor: s-resize;
+  }
+  .resize-border-left {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 5px; /* 5px for the mouse cursor update size */
+    border-left: 1px solid rgba(204,31,48,1); /* 1px for the "border" size */
+    cursor: w-resize;
+  }
+  .resize-border-right {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px; /* 5px for the mouse cursor update size */
+    border-right: 1px solid rgba(204,31,48,1); /* 1px for the "border" size */
+    cursor: e-resize;
+  }
+  .resize-corner  {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    border: 1px solid #808080;
+    background: #FFF;
+    opacity: 0;
+    transition: all 0.25s;
+  }
+  .resize-corner-top-left {
+    top: -3px;
+    left: -3px;
+    cursor: nw-resize;
+  }
+  .resize-corner-top-right {
+    top: -3px;
+    right: -3px;
+    cursor: ne-resize;
+  }
+  .resize-corner-bottom-left {
+    bottom: -3px;
+    left: -3px;
+    cursor: sw-resize;
+  }
+  .resize-corner-bottom-right {
+    bottom: -3px;
+    right: -3px;
+    cursor: se-resize;
+  }

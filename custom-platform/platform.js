@@ -8,8 +8,30 @@ platformWin.on('close-requested', () => { });
 let getPlatformP;
 let nativeHelper;
 
-fin.System.launchExternalProcess({alias: 'native-helper', arguments: fin.desktop.getVersion()});
-fin.InterApplicationBus.Channel.connect('native-platform-helper').then(client => nativeHelper = client);
+fin.System.launchExternalProcess({ alias: 'native-helper', arguments: fin.desktop.getVersion() });
+fin.InterApplicationBus.Channel.connect('native-platform-helper').then(client => {
+    nativeHelper = client;
+
+    client.onDisconnection(() => nativeHelper = undefined);
+});
+
+fin.InterApplicationBus.subscribe({ uuid: platformApp.identity.uuid }, 'window-begin-user-bounds-changing', async (evt, source) => {
+    if(nativeHelper) {
+        let platform = await getPlatform();
+        let snapshot = await platform.getSnapshot();
+
+        nativeHelper.dispatch('dragStart', {
+            source,
+            snapshot 
+        });
+    }
+});
+
+fin.InterApplicationBus.subscribe({ uuid: platformApp.identity.uuid }, 'window-end-user-bounds-changing', async (evt, source) => {
+    if(nativeHelper) {
+        nativeHelper.dispatch('dragEnd', { source });
+    }
+});
 
 export async function getPlatform() {
     return getPlatformP || (getPlatformP = new Promise(resolve => {
