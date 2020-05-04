@@ -60,7 +60,7 @@ namespace NativeHelper.DTO
         public EdgeVisibility VisibleEdges { get; set; }
 
         [JsonProperty("customData")]
-        public Dictionary<string, object> CustomData { get; set; }
+        public CustomData CustomData { get; set; }
 
         [JsonExtensionData]
         public IDictionary<string, JToken> Properties { get; set; }
@@ -72,5 +72,30 @@ namespace NativeHelper.DTO
         [JsonProperty("left")]   public bool Left { get; set; }
         [JsonProperty("bottom")] public bool Bottom { get; set; }
         [JsonProperty("right")]  public bool Right { get; set; }
+    }
+
+    class CustomData
+    {
+        [JsonProperty("groupId")]
+        public string GroupId { get; set; }
+
+        [JsonProperty("edgeIds")]
+        public EdgeIds EdgeIds { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> Properties { get; set; }
+    }
+
+    class EdgeIds
+    {
+        [JsonProperty("top")]    public string Top { get; set; }
+        [JsonProperty("left")]   public string Left { get; set; }
+        [JsonProperty("bottom")] public string Bottom { get; set; }
+        [JsonProperty("right")]  public string Right { get; set; }
+
+        public string[] ToArray()
+        {
+            return new[] { Left, Top, Right, Bottom };
+        }
     }
 }

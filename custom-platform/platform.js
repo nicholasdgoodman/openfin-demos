@@ -17,12 +17,14 @@ fin.InterApplicationBus.Channel.connect('native-platform-helper').then(client =>
 
 fin.InterApplicationBus.subscribe({ uuid: platformApp.identity.uuid }, 'window-begin-user-bounds-changing', async (evt, source) => {
     if(nativeHelper) {
+        let { edges } = evt;
         let platform = await getPlatform();
         let snapshot = await platform.getSnapshot();
 
         nativeHelper.dispatch('dragStart', {
             source,
-            snapshot 
+            snapshot,
+            edges
         });
     }
 });
@@ -43,11 +45,18 @@ export async function getPlatform() {
                     let options = Object.assign({
                         name: fin.desktop.getUuid().substr(0,7),
                         frame: false,
+                        resizable: false,
                         defaultHeight: 200,
                         defaultWidth: 200,
                         contextMenu: true,
                         customData: { 
                             groupId: fin.desktop.getUuid().substr(0,7),
+                            edgeIds: {
+                                top: fin.desktop.getUuid().substr(0,7),
+                                left: fin.desktop.getUuid().substr(0,7),
+                                bottom: fin.desktop.getUuid().substr(0,7),
+                                right: fin.desktop.getUuid().substr(0,7)
+                            },
                             canSnap: true,
                             state: { }
                         }
@@ -96,26 +105,6 @@ export async function getPlatform() {
                     if(nativeHelper) {
                         await nativeHelper.dispatch('applySnapshotEx', snapshot);
                     }
-                    
-                    let groups = snapshot.windows.reduce((groups, window) => {
-                        let groupId = window.customData && window.customData.groupId;
-                        let group = groups[groupId] || [];
-    
-                        group.push(window);
-                        groups[groupId] = group;
-                        return groups;
-                    }, {});
-    
-                    Object.values(groups).forEach(group => {
-                        if(group.length > 1) {
-                            let firstWin = fin.Window.wrapSync({ uuid: fin.me.uuid, name: group[0].name });
-    
-                            for(var n = 1; n < group.length; n++) {
-                                let otherWin = fin.Window.wrapSync({ uuid: fin.me.uuid, name: group[n].name });
-                                otherWin.joinGroup(firstWin);
-                            }
-                        }
-                    });
                 }
             }
             let platform = new Platform();

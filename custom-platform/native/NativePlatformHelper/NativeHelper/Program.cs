@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Drawing;
 
-using Newtonsoft.Json.Linq;
 using Fin = Openfin.Desktop;
+using NativeHelper.DTO;
 
 namespace NativeHelper
 {
@@ -36,28 +35,28 @@ namespace NativeHelper
 
                 var provider = runtime.InterApplicationBus.Channel.CreateProvider("native-platform-helper");
 
-                provider.RegisterTopic<DTO.Snapshot, DTO.Snapshot>("getSnapshotEx", (snapshot) =>
+                provider.RegisterTopic<Snapshot, Snapshot>("getSnapshotEx", (snapshot) =>
                 {
                     return layoutEngine.ProcessGetSnapshot(snapshot);
                 });
 
-                provider.RegisterTopic<DTO.Snapshot, object>("applySnapshotEx", (snapshot) =>
+                provider.RegisterTopic<Snapshot, object>("applySnapshotEx", (snapshot) =>
                 {
                     layoutEngine.ProcessApplySnapshot(snapshot);
                     return null;
                 });
 
-                provider.RegisterTopic<DTO.DragEventArgs, object>("dragStart", (e) =>
+                provider.RegisterTopic<DragEventArgs, object>("dragStart", (e) =>
                 {
                     layoutEngine.ProcessDragStart(e);
                     return null;
                 });
 
-                provider.RegisterTopic<DTO.DragEventArgs, object>("dragEnd", (e) =>
+                provider.RegisterTopic<DragEventArgs, object>("dragEnd", (e) =>
                 {
                     layoutEngine.ProcessDragEnd();
                     return null;
-                });       
+                });
 
                 provider.OpenAsync();
             });

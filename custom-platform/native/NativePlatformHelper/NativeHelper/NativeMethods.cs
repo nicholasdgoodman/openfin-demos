@@ -195,6 +195,7 @@ namespace NativeHelper
         [Flags]
         public enum SetWindowPosFlags : uint
         {
+            None = 0x0000,
             /// <summary>If the calling thread and the thread that owns the window are attached to different input queues,
             /// the system posts the request to the thread that owns the window. This prevents the calling thread from
             /// blocking its execution while other threads process the request.</summary>

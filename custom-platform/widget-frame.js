@@ -1,30 +1,45 @@
 (async function () {
 
+const finWindow = fin.Window.getCurrentSync();
+
 const groupIdInput = document.querySelector('#groupIdInput');
 const changeGroupId = document.querySelector('#changeGroupId');
 const textInput = document.querySelector('#textInput');
-const finWindow = fin.Window.getCurrentSync();
 const ladder = document.querySelector('#ladder');
 
 const dragRegions = document.querySelectorAll('.drag');
+const resizeBorders = document.querySelectorAll('.resize-border');
+const resizeCorners = document.querySelectorAll('.resize-corner');
 
-let { customData: { state, groupId } } = await finWindow.getOptions();
+let { customData } = await finWindow.getOptions();
 
-groupIdInput.innerText = groupId
-textInput.value = state.textInput || '';
+groupIdInput.innerText = customData.groupId
+textInput.value = customData.state.textInput || '';
 
-
-function setState(key, value) {
-    state[key] = value;
-    finWindow.updateOptions({ customData: { state, groupId } });
+function setState(key, value) {    
+    finWindow.updateOptions({ 
+        customData: {
+            ...customData,
+            state: {
+                ...customData.state,
+                [key]: value
+            }
+        }
+    });
 }
 
-function setGroup(groupId) {
-    finWindow.updateOptions({ customData: { state, groupId } });
+function setGroup(groupId, edgeIds) {
+    finWindow.updateOptions({
+        customData: {
+            ...customData,
+            groupId,
+            edgeIds
+        }
+    });
 }
 
 finWindow.addListener('options-changed', evt => {
-    let { customData: { state, groupId, isInGroup } } = evt.options;
+    let { customData: { state, groupId, edgeIds, isInGroup } } = evt.options;
 
     groupIdInput.innerText = groupId;
     textInput.value = state.textInput || '';
@@ -33,20 +48,22 @@ finWindow.addListener('options-changed', evt => {
 textInput.addEventListener('input', evt => setState(textInput.id, textInput.value));
 changeGroupId.addEventListener('click', () => {
     let newGroupId = fin.desktop.getUuid().substr(0, 7);
-    groupIdInput.innerText = newGroupId;
-    setGroup(newGroupId);
-
-    finWindow.leaveGroup();
+    let newEdgeIds = {
+        top: fin.desktop.getUuid().substr(0, 7),
+        left: fin.desktop.getUuid().substr(0, 7),
+        bottom: fin.desktop.getUuid().substr(0, 7),
+        right: fin.desktop.getUuid().substr(0, 7)
+    }
+    //groupIdInput.innerText = newGroupId;
+    window.moveBy(10,10);
+    setGroup(newGroupId, newEdgeIds);
 });
 
 const resizeOptions = {
     moveIndependently: true
 };
-let ladderExpanded = false;
 
-if(state !== undefined && state.ladderExpanded !== undefined) {
-    ladderExpanded = state.ladderExpanded;
-}
+let ladderExpanded = customData.state && customData.state.ladderExpanded || false;
 
 ladder.onclick = async () => {
     ladderExpanded = !ladderExpanded;
@@ -64,7 +81,7 @@ dragRegions.forEach(dragRegion => {
             top: window.screenTop,
             height: window.outerHeight,
             width: window.outerWidth,
-            reason: 'synthetic',
+            reason: 'synthetic-move',
             uuid: fin.me.identity.uuid,
             name: fin.me.identity.name
         });
@@ -77,6 +94,7 @@ dragRegions.forEach(dragRegion => {
             top: window.screenTop,
             height: window.outerHeight,
             width: window.outerWidth,
+            reason: 'synthetic-move',
             uuid: fin.me.identity.uuid,
             name: fin.me.identity.name
         });
@@ -98,6 +116,64 @@ dragRegions.forEach(dragRegion => {
     dragRegion.addEventListener('mouseenter', evt => {
         if(isDragging && evt.which === 0) {
             onEndDrag();
+        }
+    });
+});
+
+resizeBorders.forEach(resizeBorder => {
+    let isResizing = false;
+
+    function onBeginResize(edges) {
+        fin.InterApplicationBus.publish('window-begin-user-bounds-changing', {
+            left: window.screenLeft,
+            top: window.screenTop,
+            height: window.outerHeight,
+            width: window.outerWidth,
+            reason: 'synthetic-resize',
+            edges,
+            uuid: fin.me.identity.uuid,
+            name: fin.me.identity.name
+        });
+        isResizing = true;
+    }
+
+    function onEndResize() {
+        console.log('onEndResize');
+        fin.InterApplicationBus.publish('window-end-user-bounds-changing', {
+            left: window.screenLeft,
+            top: window.screenTop,
+            height: window.outerHeight,
+            width: window.outerWidth,
+            reason: 'synthetic-resize',
+            uuid: fin.me.identity.uuid,
+            name: fin.me.identity.name
+        });
+        isResizing = false;
+    }
+
+    resizeBorder.addEventListener('mousedown', evt => {
+        let edges = [];
+        
+        ['top','left','bottom','right'].forEach(edge => {
+            if(evt.target.classList.contains(`resize-border-${edge}`)) {
+                edges.push(edge);
+            }
+        });
+        
+        onBeginResize(edges);
+        evt.stopPropagation();
+        evt.preventDefault();
+    });
+
+    resizeBorder.addEventListener('mouseup', evt => {
+        if(isResizing) {
+            onEndResize();
+        }
+    });
+
+    resizeBorder.addEventListener('mouseenter', evt => {
+        if(isResizing && evt.which === 0) {
+            onEndResize();
         }
     });
 });

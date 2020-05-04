@@ -35,6 +35,9 @@ body {
   .resize-border {
     position: absolute;
   }
+  .resize-border:hover {
+    background-color: rgba(32,32,32,0.4);
+  }
   .resize-border-top {
     top: 0;
     left: 0;

@@ -13,17 +13,16 @@ namespace NativeHelper
 {
     class LayoutEngine
     {
+        private readonly object lockObj = new object();
         private readonly Timer pollTimer;
-        private readonly object lockObj;
 
-        IntPtr sourceHandle = IntPtr.Zero;
-        Dictionary<IntPtr, NativeMethods.RECT> startRects = default;
         NativeMethods.POINT startMouse = default;
+        DragEventArgs dragEventArgs = default;
 
         public LayoutEngine()
         {
-            pollTimer = new Timer(PollTimerCallback, null, 0, 32);
             lockObj = new object();
+            pollTimer = new Timer(PollTimerCallback, null, 0, 32);
         }
 
         public Snapshot ProcessGetSnapshot(Snapshot snapshot)
@@ -110,46 +109,23 @@ namespace NativeHelper
                     NativeMethods.SetWindowPosFlags.NoActivate | NativeMethods.SetWindowPosFlags.NoZOrder);
             }
         }
-
+        
         public void ProcessDragStart(DragEventArgs e)
         {
-            Console.WriteLine("dragStart");
-            var source = e.Source.Name;
-            var snapshot = e.Snapshot;
-            var windowEntries = snapshot.Windows;
-
-            var sourceEntry = windowEntries
-                .FirstOrDefault(entry => entry.Name == source);
-
-            var sourceGroup = sourceEntry.CustomData["groupId"].ToString();
-
+            Console.WriteLine($"dragStart2 {e.DragType}");
             lock (lockObj)
             {
-                startRects = windowEntries
-                .Where(entry => entry.CustomData.ContainsKey("groupId") && entry.CustomData["groupId"].ToString() == sourceGroup)
-                .Select(entry =>
-                {
-                    var handle = entry.NativeId;
-                    NativeMethods.RECT startRect;
-                    NativeMethods.GetWindowRect(handle, out startRect);
-                    return new KeyValuePair<IntPtr, NativeMethods.RECT>(handle, startRect);
-                }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-                //TODO: Make thread safe
-                sourceHandle = sourceEntry.NativeId;
-
+                dragEventArgs = e;
                 NativeMethods.GetCursorPos(out startMouse);
-            }    
+            }
         }
 
         public void ProcessDragEnd()
         {
-            Console.WriteLine("dragEnd");
-            lock(lockObj)
+            Console.WriteLine("dragEnd2");
+            lock (lockObj)
             {
-                sourceHandle = IntPtr.Zero;
-                startRects = default;
-                startMouse = default;
+                dragEventArgs = null;
             }
         }
 
@@ -157,34 +133,61 @@ namespace NativeHelper
         {
             lock (lockObj)
             {
-                if (sourceHandle != IntPtr.Zero)
+                if(dragEventArgs == null)
                 {
-                    NativeMethods.POINT mousePos;
-                    NativeMethods.GetCursorPos(out mousePos);
-
-                    var dx = mousePos.x - startMouse.x;
-                    var dy = mousePos.y - startMouse.y;
-
-                    var winPosInfo = NativeMethods.BeginDeferWindowPos(startRects.Count);
-
-                    foreach (var kvp in startRects.Reverse())
-                    {
-                        var handle = kvp.Key;
-                        var startRect = kvp.Value;
-
-                        winPosInfo = NativeMethods.DeferWindowPos(
-                            winPosInfo,
-                            handle,
-                            IntPtr.Zero,
-                            startRect.left + dx,
-                            startRect.top + dy,
-                            0,
-                            0,
-                            NativeMethods.SetWindowPosFlags.NoSize);
-                    }
-
-                    NativeMethods.EndDeferWindowPos(winPosInfo);
+                    return;
                 }
+
+                var sourceEntry = dragEventArgs.Snapshot.Windows.FirstOrDefault(entry => entry.Name == dragEventArgs.Source.Name);
+
+                var vEdgeId =
+                    dragEventArgs.DragType.HasFlag(DragEventType.Left) ? sourceEntry.CustomData.EdgeIds.Left :
+                    dragEventArgs.DragType.HasFlag(DragEventType.Right) ? sourceEntry.CustomData.EdgeIds.Right :
+                    null;
+                var hEdgeId =
+                    dragEventArgs.DragType.HasFlag(DragEventType.Top) ? sourceEntry.CustomData.EdgeIds.Top :
+                    dragEventArgs.DragType.HasFlag(DragEventType.Bottom) ? sourceEntry.CustomData.EdgeIds.Bottom :
+                    null;
+                var isMove = dragEventArgs.DragType == DragEventType.Move;
+
+
+                // UNFILTERED! ALL WINDOWS - TO CHANGE LATER
+                var targetWindows = dragEventArgs.Snapshot.Windows.Where(e => 
+                    (!isMove || e.CustomData.GroupId == sourceEntry.CustomData.GroupId) &&
+                    !e.Name.StartsWith("@@"));
+
+
+                NativeMethods.POINT mousePos;
+                NativeMethods.GetCursorPos(out mousePos);
+
+                var dx = mousePos.x - startMouse.x;
+                var dy = mousePos.y - startMouse.y;
+
+                var winPosInfo = NativeMethods.BeginDeferWindowPos(targetWindows.Count());
+
+                foreach (var windowEntry in targetWindows.Reverse())
+                {
+                    var startRect = windowEntry.Rectangle;
+                    var tgtEdges = windowEntry.CustomData.EdgeIds;
+
+                    var newRect = new NativeMethods.RECT(
+                        startRect.left + (isMove || tgtEdges.Left == vEdgeId ? dx : 0),
+                        startRect.top + (isMove || tgtEdges.Top == hEdgeId ? dy : 0),
+                        startRect.right + (isMove || tgtEdges.Right == vEdgeId ? dx : 0),
+                        startRect.bottom + (isMove || tgtEdges.Bottom == hEdgeId ? dy : 0));
+
+                    winPosInfo = NativeMethods.DeferWindowPos(
+                        winPosInfo,
+                        windowEntry.NativeId,
+                        IntPtr.Zero,
+                        newRect.left,
+                        newRect.top,
+                        newRect.Size.Width,
+                        newRect.Size.Height,
+                        isMove ? NativeMethods.SetWindowPosFlags.NoSize : NativeMethods.SetWindowPosFlags.None); // TODO: consider scaling
+                }
+
+                NativeMethods.EndDeferWindowPos(winPosInfo);
             }
         }
 

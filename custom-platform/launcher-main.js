@@ -115,11 +115,25 @@ const snapping = new SnapManager({
         previewWindow.setBounds({ top: minInt, left: minInt });
         draggingWindow.setBounds(evt.position);
 
-        let { customData: { state }} = await draggingWindow.getOptions();
-        let { customData: { groupId }} = evt.target;
-        
-        draggingWindow.updateOptions({ customData: { state, groupId }});
-        draggingWindow.joinGroup(targetWindow);
+        let { customData: { state, edgeIds }} = await draggingWindow.getOptions();
+        let { customData: { groupId, edgeIds: { top, left, bottom, right } }} = evt.target;
+
+        switch(evt.type) {
+            case 'left':
+                Object.assign(edgeIds, { right: left, top, bottom });
+                break;
+            case 'top':
+                Object.assign(edgeIds, { bottom: top, left, right });
+                break;
+            case 'right':
+                Object.assign(edgeIds, { left: right, top, bottom });
+                break;
+            case 'bottom':
+                Object.assign(edgeIds, { top: bottom, left, right });
+                break;
+        }
+
+        draggingWindow.updateOptions({ customData: { state, groupId, edgeIds }});
     }
 });
 
