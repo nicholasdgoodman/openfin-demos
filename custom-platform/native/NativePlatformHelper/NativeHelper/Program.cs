@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 using Fin = Openfin.Desktop;
 using NativeHelper.DTO;
+using Newtonsoft.Json.Linq;
+using System.Runtime.InteropServices;
+using Openfin.Desktop;
 
 namespace NativeHelper
 {
@@ -64,6 +67,33 @@ namespace NativeHelper
             var runtimeConnectedTsc = new TaskCompletionSource<object>();
             runtime.Disconnected += (s, e) => runtimeConnectedTsc.SetResult(null);
             runtimeConnectedTsc.Task.Wait();
+        }
+
+        void UpdateOptionsRaw(this Window window, object options, AckCallback ack, AckCallback nak)
+        {
+            var app = window.Application;
+            var runtime = app.Runtime;
+
+            var payload = new JObject();
+            payload["uuid"] = app.Uuid;
+            payload["name"] = window.Name;
+            payload["options"] = JObject.FromObject(options);
+
+            runtime.DesktopConnection.sendAction("update-window-options", payload, ack, nak);
+        }
+
+        void EnableMaximize(IntPtr handle)
+        {
+            var style = NativeMethods.GetWindowLong(handle, NativeMethods.WindowLongParam.GWL_STYLE);
+            style |= (uint)(NativeMethods.WindowStyles.WS_MAXIMIZE);
+            NativeMethods.SetWindowLong(handle, NativeMethods.WindowLongParam.GWL_STYLE, style);
+        }
+
+        void DisableMaximize(IntPtr handle)
+        {
+            var style = NativeMethods.GetWindowLong(handle, NativeMethods.WindowLongParam.GWL_STYLE);
+            style &= ~(uint)(NativeMethods.WindowStyles.WS_MAXIMIZE);
+            NativeMethods.SetWindowLong(handle, NativeMethods.WindowLongParam.GWL_STYLE, style);
         }
     }
 

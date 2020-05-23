@@ -19,9 +19,9 @@
     },
     "runtime": {
         "arguments": "",
-        "version": "alpha"
+        "version": "stable"
     },
-    "appAssets":[
+    "appAssets": [
         {
             "alias": "native-helper",
             "version": "0.0.1",

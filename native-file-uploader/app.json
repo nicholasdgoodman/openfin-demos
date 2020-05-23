@@ -1,0 +1,28 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "OpenfinPOC",
+        "description": "OpenFin POC",
+        "url": "http://localhost:3000/index.html",
+        "uuid": "OpenfinPOC-zd60mfyl1l",
+        "autoShow": true,
+        "permissions": {
+            "System": {
+                "launchExternalProcess": true
+            }
+        }
+    },
+    "runtime": {
+        "arguments": "",
+        "version": "stable"
+    },
+    "appAssets": [
+        {
+            "alias": "native-helper",
+            "src": "http://localhost:3000/native-helper.zip",
+            "version": "0.1.0",
+            "forceDownload": true
+        }
+    ],
+    "shortcut": {}
+}
