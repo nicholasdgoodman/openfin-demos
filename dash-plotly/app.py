@@ -58,7 +58,7 @@ app.clientside_callback(
         namespace = 'openfin',
         function_name = 'updateInput'
     ),
-    Output('page-1-dropdown', 'children'),
+    Output('page-1-dropdown', 'placeholder'),
     [Input('page-1-dropdown', 'value')]
 )
 
