@@ -1,0 +1,13 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "app-2",
+        "url": "https://html5test.com/index.html",
+        "uuid": "app-2",
+        "saveWindowState": false,
+        "autoShow": true
+    },
+    "runtime": {
+        "version": "stable-v15"
+    }
+}
