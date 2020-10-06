@@ -1,0 +1,43 @@
+<script src="https://cdn.openfin.co/services/openfin/fdc3/0.2.2/openfin-fdc3.js"></script>
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container">
+    <div id="tradingview_4114f"></div>
+    <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener" target="_blank"><span class="blue-text">AAPL Chart</span></a> by TradingView</div>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+    window.widget = new TradingView.widget(
+    {
+    "autosize": true,
+    "symbol": "NASDAQ:AAPL",
+    "interval": "60",
+    "timezone": "Etc/UTC",
+    "theme": "light",
+    "style": "1",
+    "locale": "en",
+    "toolbar_bg": "#f1f3f6",
+    "enable_publishing": false,
+    "hide_top_toolbar": true,
+    "allow_symbol_change": true,
+    "save_image": false,
+    "container_id": "tradingview_4114f"
+  }
+    );
+
+    if(window.fdc3) {
+        window.fdc3.addContextListener(ctx => {
+            if(ctx.type === "fdc3.instrument" && ctx.id && ctx.id.ticker) {
+                window.widget.options.symbol = ctx.id.ticker;
+                window.widget.reload();
+            }
+        });
+
+        window.fdc3.addIntentListener('ViewChart', ctx => {
+            if(ctx.type === "fdc3.instrument" && ctx.id && ctx.id.ticker) {
+                window.widget.options.symbol = ctx.id.ticker;
+                window.widget.reload();
+            }
+        });
+    }
+    </script>
+  </div>
+  <!-- TradingView Widget END -->

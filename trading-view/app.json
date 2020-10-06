@@ -1,0 +1,44 @@
+{
+    "runtime": {
+        "version": "stable"
+    },
+    "platform": {
+        "uuid": "app-1601949757588-2676",
+        "autoShow": false,
+        "fdc3Api": true
+    },
+    "snapshot": {
+        "windows": [
+            {
+                "saveWindowState": false,
+                "backgroundThrottling": true,
+                "layout": {
+                    "content": [
+                        {
+                            "type": "row",
+                            "id": "no-drop-target",
+                            "content": [
+                                {
+                                    "type": "component",
+                                    "componentName": "view",
+                                    "componentState": {
+                                        "name": "view-1601949757588-5017",
+                                        "url": "http://localhost:5001/index.html"
+                                    }
+                                },
+                                {
+                                    "type": "component",
+                                    "componentName": "view",
+                                    "componentState": {
+                                        "name": "view-1601949757588-5018",
+                                        "url": "about:blank"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
