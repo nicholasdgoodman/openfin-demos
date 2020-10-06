@@ -13,7 +13,7 @@
                             "componentName": "view",
                             "componentState": {
                                 "name": "named-chart-instance",
-                                "url": "http://localhost:5001/index.html"
+                                "url": "https://nicholasdgoodman.github.io/openfin-demos/trading-view/index.html"
                             }
                         }]
                     }]

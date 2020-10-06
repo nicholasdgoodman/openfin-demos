@@ -12,7 +12,7 @@
                             "type": "component",
                             "componentName": "view",
                             "componentState": {
-                                "url": "http://localhost:5001/index.html"
+                                "url": "https://nicholasdgoodman.github.io/openfin-demos/trading-view/index.html"
                             }
                         }]
                     }]
