@@ -25,10 +25,5 @@
 		"version": "16.83.53.26"
 	},
     "intents": [
-        {
-            "name": "Demo.ViewChart",
-            "contexts": [ "fdc3.instrument" ],
-            "displayName": "Open with Multi Instance Chart"
-        }
     ]
 }
