@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <title>Main App</title>
+        <style>
+
+        </style>
+    </head>
+    <body style="background-color: white;">
+        <h1>UI Application</h1>
+        <div>
+            <div>
+                <label for="loginState">Application State</label>
+                <input readonly id="loginState" name="loginState" value=""></input>
+            </div>
+            <div>
+                <label for="appSessionn">Main App Session Token</label>
+                <input readonly id="appSession" name="appSession" value=""></input>
+            </div>
+            <div>
+                <label for="appSessionTimeout">Session Timeout</label>
+                <input readonly id="appSessionTimeout" name="appSessionTimeout"></input>
+            </div>
+            <div>
+                <label for="apiSession">Data API Session Token</label>
+                <input readonly id="apiSession" name="apiSession"></input>
+            </div>
+            <div>
+                <label for="apiSessionTimeout">Session Timeout</label>
+                <input readonly id="apiSessionTimeout" name="apiSessionTimeout"></input>
+            </div>
+            <button id="loginButton">Login</button>
+            <button id="logoutButton">Logout</button>
+        </div>
+        <script>
+            const appSessionDuration = 20;
+            const apiSessionDuration = 60;
+
+            let appSessionRemaining = 0;
+            let apiSessionRemaining = 0;
+
+            const APP_SESSION_COOKIE = 'appSession';
+            const API_SESSION_COOKIE = 'apiSession';
+
+            const loginState = document.getElementById('loginState');
+            const appSession = document.getElementById('appSession');
+            const appSessionTimeout = document.getElementById('appSessionTimeout');
+            const apiSession = document.getElementById('apiSession');
+            const apiSessionTimeout = document.getElementById('apiSessionTimeout');
+            const loginButton = document.getElementById('loginButton');
+            const logoutButton = document.getElementById('logoutButton');
+
+            loginButton.addEventListener('click', login);
+            logoutButton.addEventListener('click', logout);
+
+            setInterval(pollState, 1000);
+            pollState();
+
+            function pollState() {
+                const cookies = new Map(document.cookie.split(';').filter(entry => entry).map(entry => entry.trim().split('=')));
+
+                const appToken = cookies.get(APP_SESSION_COOKIE);
+                if(appToken) {
+                    loginState.value = 'Logged In';
+                    appSession.value = appToken;
+                    appSessionTimeout.value = appSessionRemaining;
+                } else {
+                    loginState.value = 'Logged Out';
+                    appSession.value = '';
+                    appSessionTimeout.value = '';
+                }
+
+                const apiToken = cookies.get(API_SESSION_COOKIE);
+                if(apiToken) {
+                    apiSession.value = apiToken;
+                    apiSessionTimeout.value = apiSessionRemaining;
+                } else {
+                    apiSession.value = '';
+                    apiSessionTimeout.value = '';
+                }
+
+                if(appSessionRemaining) {
+                    appSessionRemaining--;
+                }
+
+                if(apiSessionRemaining) {
+                    apiSessionRemaining--;
+                }
+            }
+
+            function login() {
+                // These cookies would actually come from the server...
+                document.cookie = `${APP_SESSION_COOKIE}=${fin.desktop.getUuid()};max-age=${appSessionDuration}`;
+                document.cookie = `${API_SESSION_COOKIE}=${fin.desktop.getUuid()};max-age=${apiSessionDuration}`;
+            
+                appSessionRemaining = appSessionDuration;
+                apiSessionRemaining = apiSessionDuration;
+
+                pollState();
+            }
+
+            function logout() {
+                document.cookie = `${APP_SESSION_COOKIE}=;max-age=0`;
+                document.cookie = `${API_SESSION_COOKIE}=;max-age=0`;
+
+                pollState();
+            }
+        </script>
+    </body>
+</html>
