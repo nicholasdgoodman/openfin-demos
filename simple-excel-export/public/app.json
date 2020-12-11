@@ -1,0 +1,24 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "OpenfinPOC",
+        "url": "http://localhost:3000/index.html",
+        "_url": "about:blank",
+        "uuid": "OpenfinPOC-1607635406760",
+        "saveWindowState": false,
+        "autoShow": true,
+        "permissions": {
+            "System": {
+                "launchExternalProcess": true
+            }
+        }
+    },
+    "runtime": {
+        "version": "stable"
+    },
+    "services": [
+        {
+          "name": "excel"
+        }
+      ]
+}
