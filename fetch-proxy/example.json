@@ -1,0 +1,30 @@
+{
+	"platform": {
+		"uuid": "osLaunchpadMain"
+	},
+    "snapshot": {
+        "windows": [
+            {
+                "name": "layout-window",
+                "layout": {
+                    "content": [{
+                        "type": "stack",
+                        "content":[{
+                            "type": "component",
+                            "componentName": "view",
+                            "componentState": {
+                                "name": "my-new-test-view",
+                                "channelId": "yellow",
+                                "url": "http://www.example.com"
+                            }
+                        }]
+                    }]
+                }
+            }
+        ]
+    },
+	"runtime": {
+		"arguments": "--security-realm=of-notifications-service --enable-mesh --disable-legacy-window",
+		"version": "16.83.53.26"
+	}
+}

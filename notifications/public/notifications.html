@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <title>Notification App</title>
+        <script src="https://cdn.openfin.co/services/openfin/notifications/0.12.7/openfin-notifications.js"></script>
+    </head>
+    <body>
+        <em>This window stays hidden, and is responsible for generating notifications and managing tray icons.</em>
+        <br/>
+        <br/>
+
+        <div>
+            <label for="apiSession">Data API Session Token</label>
+            <input readonly id="apiSession" name="apiSession"></input>
+        </div>
+        <script>
+            const API_SESSION_COOKIE = 'apiSession';
+            const NOTIFICATION_TASK = 'reminder-click';
+            const NOTIFICATION_TARGET = 'popup';
+
+            setInterval(pollState, 1000);
+            pollState();
+
+            function pollState() {
+                const cookies = new Map(document.cookie.split(';').filter(entry => entry).map(entry => entry.trim().split('=')));
+
+                const apiToken = cookies.get(API_SESSION_COOKIE);
+                if(apiToken) {
+                    apiSession.value = apiToken;
+
+                    const now = new Date();
+                    if(now.getSeconds() % 20 === 0) {
+                        window.notifications.create({
+                            title: 'Important Reminder',
+                            body: 'The most important thing you will do today.',
+                            category: 'Reminders',
+                            onSelect: {
+                                task: NOTIFICATION_TASK,
+                                target: NOTIFICATION_TARGET
+                            }
+                        });
+                    }
+                } else {
+                    apiSession.value = '';
+                }
+            }
+
+            window.notifications.addEventListener('notification-action', async (evt) => {
+                if(evt.result.task === NOTIFICATION_TASK) {
+                    let mainView;
+                    let mainWindow;
+
+                    try {
+                        mainView = fin.View.wrapSync({ 
+                            uuid: fin.me.identity.uuid, 
+                            name: 'main-app'
+                        });
+                        mainWindow = await mainView.getCurrentWindow();
+                    } catch {
+                        mainView = await fin.Platform.getCurrentSync().createView({
+                            name: 'main-app',
+                            url: (new URL('main-app.html', location.href)).href
+                        });
+                        mainWindow = await mainView.getCurrentWindow();
+                    }
+
+                    await mainWindow.restore();
+                    await mainWindow.show();
+                    await mainWindow.setAsForeground();
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,29 @@
+{
+	"platform": {
+		"uuid": "osLaunchpadMain"
+	},
+    "snapshot": {
+        "windows": [
+            {
+                "layout": {
+                    "content": [{
+                        "type": "stack",
+                        "content":[{
+                            "type": "component",
+                            "componentName": "view",
+                            "componentState": {
+                                "url": "https://nicholasdgoodman.github.io/openfin-demos/trading-view/index.html"
+                            }
+                        }]
+                    }]
+                }
+            }
+        ]
+    },
+	"runtime": {
+		"arguments": "--security-realm=of-notifications-service --enable-mesh --disable-legacy-window",
+		"version": "16.83.53.26"
+	},
+    "intents": [
+    ]
+}

@@ -1,0 +1,51 @@
+{
+    "runtime": {
+        "version": "stable"
+    },
+    "platform": {
+        "uuid": "notifications-demo-app",
+        "autoShow": false
+    },
+    "services": [
+        { "name": "notifications" }
+    ],
+    "snapshot": {
+        "windows": [
+            {
+                "saveWindowState": false,
+                "backgroundThrottling": true,
+                "layout": {
+                    "content": [
+                        {
+                            "type": "row",
+                            "id": "no-drop-target",
+                            "content": [
+                                {
+                                    "type": "component",
+                                    "componentName": "view",
+                                    "componentState": {
+                                        "name": "main-app",
+                                        "url": "http://localhost:5555/public/main-app.html"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "defaultTop": 60,
+                "defaultLeft": 60,
+                "defaultWidth": 800,
+                "defaultHeight": 560
+            },
+            {
+                "saveWindowState": false,
+                "backgroundThrottling": true,
+                "url": "http://localhost:5555/public/notifications.html",
+                "defaultTop": 480,
+                "defaultLeft": 900,
+                "defaultWidth": 400,
+                "defaultHeight": 150
+            }
+        ]
+    }
+}

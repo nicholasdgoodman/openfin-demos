@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>Simple Excel Demo</title>
+        <script src="https://openfin.github.io/excel-api-example/client/fin.desktop.Excel.js"></script>
+    </head>
+    <body>
+        <script>
+            let nativeHelper;
+
+            let fileName = 'export.csv';
+            let data = [
+                ['A','B','C'],
+                [1,2,3],
+                [4,5,6]
+            ];
+
+            let fileId;
+
+            let excelServiceInitialzed = fin.desktop.ExcelService.init();
+
+            async function exportCsvToExcel() {
+                if(window.fin === undefined || window.fin.desktop.ExcelService === undefined) {
+                    let a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = fileName;
+                    a.click();
+                } else {
+                    await excelServiceInitialzed;
+                    
+                    let isRunning = await fin.desktop.Excel.getConnectionStatus();
+                    if(!isRunning) {
+                        fin.desktop.Excel.run();
+                        await new Promise(rs => fin.desktop.ExcelService.addEventListener('excelConnected', rs));
+                    }
+                    
+                    let wb = await fin.desktop.Excel.addWorkbook();
+                    let ws = (await wb.getWorksheets())[0];
+
+                    await ws.setCells(data);
+                }
+            }
+        </script>
+        <div><button onclick="exportCsvToExcel()">Export CSV to Excel</button><span id="fileName"></span></div>
+    </body>
+</html>

@@ -1,0 +1,51 @@
+<html>
+    <head><title>File Download Demo</title></head>
+    <body>
+        <script>
+            let nativeHelper;
+
+            let fileName = 'export.csv';
+            let blob = new Blob([[
+                '"A","B","C"',
+                '"1","2","3"',
+                '"4","5","6"',
+            ].join('\n')], { type: 'text/csv'});
+
+            let fileId;
+
+            async function exportCsv() {
+                if(window.fin === undefined) {
+                    let a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = fileName;
+                    a.click();
+                } else {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = async function() {
+                        let dataUrl = reader.result;
+                        let data = dataUrl.substr(dataUrl.indexOf(',') + 1);
+                        console.log(data);
+
+                        if(!nativeHelper) {
+                            fin.System.launchExternalProcess({ alias: 'native-helper', target: 'native-helper.exe' });
+                            nativeHelper = await fin.InterApplicationBus.Channel.connect('native-helper');
+                        }
+
+                        fileId = await nativeHelper.dispatch('save-file', {
+                            fileName,
+                            content: data
+                        });
+                    }
+                }
+            }
+
+            async function openFile() {
+                await nativeHelper.dispatch('open-file', { fileId });
+            }
+        </script>
+        <div><button onclick="exportCsv()">Export CSV</button><span id="fileName"></span></div>
+        <br/>
+        <div><button onclick="openFile()">Open File</button></div>
+    </body>
+</html>

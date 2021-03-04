@@ -1,0 +1,27 @@
+{
+    "runtime": {
+        "version": "stable"
+    },
+    "platform": {
+        "uuid": "app-1601490848568-4140",
+        "autoShow": false
+    },
+    "snapshot": {
+        "windows": [
+            {
+                "name": "main",
+                "url": "https://preview1.os.openfin.co/",
+                "preloadScripts": [
+                    { "url": "http://localhost:5005/fetch-provider.js" }
+                ]
+            },
+            {
+                "name": "child",
+                "url": "https://www.example.com",
+                "preloadScripts": [
+                    { "url": "http://localhost:5005/fetch-client.js" }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,41 @@
+<html>
+    <body>
+        <section>
+            <h2>Worksheet UDF Interactions</h2>
+            <em>Test against SampleWorkbook.xlsx</em>
+            <br/>
+            <br/>
+            <label for="security">Security</label>
+            <input id="security" name="security" value="AAPL"/>
+            <br/>
+            <label for="property">Property</label>
+            <input id="property" name="property" value="Price"/>
+            <br/>
+            <label for="property-value">Value</label>
+            <input id="property-value" name="property-value" value="112.4"/>
+            <br/>
+            <button id="update-button">Update</button>
+        </section>
+        <section>
+            <h2>Worksheet VBA Interactions</h2>
+            <em>Test against MacroWorkbook.xlsm</em>
+            <br/>
+            <br/>
+            <label for="order-received">Order Received from Excel:</label>
+            <pre id="order-received" name="order-received" style="background-color: lightgray;">(None)</pre>
+        </section>
+        <script>
+            fin.InterApplicationBus.subscribe({uuid:'*'}, 'process-order', data => {
+                document.getElementById('order-received').innerText = JSON.stringify(data, null, 2);
+            });
+
+            document.getElementById('update-button').addEventListener('click', () => {
+                let security = document.getElementById('security').value;
+                let property = document.getElementById('property').value;
+                let value = document.getElementById('property-value').value;
+
+                fin.InterApplicationBus.publish(`${security}/${property}`, value);
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,42 @@
+<html>
+    <head><title>File Upload Demo</title></head>
+    <body>
+        <script>
+            let nativeHelper;
+            let fileInfo;
+
+            async function browse() {
+                if(!nativeHelper) {
+                    fin.System.launchExternalProcess({ alias: 'native-helper', target: 'native-helper.exe' });
+                    nativeHelper = await fin.InterApplicationBus.Channel.connect('native-helper');
+                }
+
+                fileInfo = await nativeHelper.dispatch("file-picker");
+
+                document.querySelector('#fileName').innerText = fileInfo.fileName;
+            }
+
+            async function upload() {
+                let { fileData, filePath } = fileInfo;
+                let fileTextBinary = window.atob(fileData);
+
+                fileBuffer = new Uint8Array(fileTextBinary.length);
+                for (var i = 0; i < fileTextBinary.length; i++) {
+                    fileBuffer[i] = fileTextBinary.charCodeAt(i);
+                }
+
+                await fetch('/upload', {
+                    method: 'POST',
+                    body: fileBuffer,
+                    headers: new Headers({ 
+                        'content-type': 'application/octet-stream',
+                        'x-upload-file-path': filePath
+                    })
+                });
+            }
+        </script>
+        <div><button onclick="browse()">Browse</button><span id="fileName"></span></div>
+        <br/>
+        <div><button onclick="upload()">Upload</button></div>
+    </body>
+</html>

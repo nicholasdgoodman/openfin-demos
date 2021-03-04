@@ -96,13 +96,15 @@ class SimpleSnapEngine {
         let snapKinds = [ 'top', 'bottom', 'left', 'right' ];
 
         targets.forEach(target => snapKinds.forEach(kind => {
-            this.snapMap.push({
-                type: kind,
-                source,
-                target,
-                zone: this.getDockZone(source, target, kind),
-                position: this.getDockPosition(source, target, kind)
-            });
+            if(target.visibleEdges === undefined || target.visibleEdges[kind]) {
+                this.snapMap.push({
+                    type: kind,
+                    source,
+                    target,
+                    zone: this.getDockZone(source, target, kind),
+                    position: this.getDockPosition(source, target, kind)
+                });
+            }
         }));
     }
 

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NativeHelper", "NativeHelper\NativeHelper.csproj", "{49140047-202D-4809-A8F9-25EEFE5E9715}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49140047-202D-4809-A8F9-25EEFE5E9715}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49140047-202D-4809-A8F9-25EEFE5E9715}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49140047-202D-4809-A8F9-25EEFE5E9715}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49140047-202D-4809-A8F9-25EEFE5E9715}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {79AD0E7E-7E60-4B4C-94FA-9611FAE7BAEA}
+	EndGlobalSection
+EndGlobal

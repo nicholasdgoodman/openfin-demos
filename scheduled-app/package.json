@@ -1,0 +1,20 @@
+{
+  "name": "scheduled-app",
+  "version": "1.0.0",
+  "description": "A common repository for dumping shared OpenFin demos.",
+  "scripts": {
+    "start": "npx npm-run-all -p host launch",
+    "host": "npx http-server -p 3000 -c-1",
+    "launch": "npx openfin-cli -l -c http://localhost:3000/app.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicholasdgoodman/openfin-demos.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nicholasdgoodman/openfin-demos/issues"
+  },
+  "homepage": "https://github.com/nicholasdgoodman/openfin-demos#readme"
+}

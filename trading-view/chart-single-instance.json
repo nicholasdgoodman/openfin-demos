@@ -1,0 +1,35 @@
+{
+	"platform": {
+		"uuid": "osLaunchpadMain"
+	},
+    "snapshot": {
+        "windows": [
+            {
+                "layout": {
+                    "content": [{
+                        "type": "stack",
+                        "content":[{
+                            "type": "component",
+                            "componentName": "view",
+                            "componentState": {
+                                "name": "named-chart-instance",
+                                "url": "https://nicholasdgoodman.github.io/openfin-demos/trading-view/index.html"
+                            }
+                        }]
+                    }]
+                }
+            }
+        ]
+    },
+	"runtime": {
+		"arguments": "--security-realm=of-notifications-service --enable-mesh --disable-legacy-window",
+		"version": "16.83.53.26"
+    },
+    "intents": [
+        {
+            "name": "Demo.ViewChart",
+            "contexts": [ "fdc3.instrument" ],
+            "displayName": "Open with Single Instance Chart"
+        }
+    ]
+}

@@ -3,17 +3,29 @@
     <link rel="stylesheet" type="text/css" href="widget-frame.css">
 </head>
 <body>
-    <div class="title-bar">
-        Header
-        <span id="groupIdInput" class="window-group-id"></span>
-        <a id="groupIdClear" class="window-popout-button">&#8663;</a>
-    </div>
-    <br />
-    <div>Content</div>
-    <div>State<input id="textInput" /></div>
-    <div><button id="ladder">Ladder</button></div>
+    <div class="resize-border resize-border-top"></div>
+    <div class="resize-border resize-border-right"></div>
+    <div class="resize-border resize-border-bottom"></div>
+    <div class="resize-border resize-border-left"></div>
 
-    <script src="widget-frame.js" type="module"></script>
+    <div class="resize-corner resize-corner-top-left"></div>
+    <div class="resize-corner resize-corner-top-right"></div>
+    <div class="resize-corner resize-corner-bottom-right"></div>
+    <div class="resize-corner resize-corner-bottom-left"></div>
+
+    <div class="content">
+        <div class="title-bar drag">
+            Header
+            <span id="groupIdInput" class="window-group-id"></span>
+            <a id="changeGroupId" class="window-popout-button">&#8663;</a>
+        </div>
+        <br />
+        <div>Content Body</div>
+        <div>State<input id="textInput" /></div>
+        <div><button id="ladder">Ladder</button></div>
+        </div>
+        <script src="widget-frame.js" type="module"></script>
+    </div>
 </body>
 
 </html>

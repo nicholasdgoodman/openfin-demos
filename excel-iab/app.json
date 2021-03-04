@@ -1,0 +1,16 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "excel-iab-demo",
+        "url": "http://localhost:5000/index.html",
+        "uuid": "excel-iab-demo",
+        "saveWindowState": false,
+        "autoShow": true
+    },
+    "runtime": {
+        "version": "stable"
+    },
+    "services": [
+        { "name": "excel" }
+    ]
+}
