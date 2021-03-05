@@ -27,6 +27,10 @@ The files of interest:
 * public/file-helper.js - an example module showing you how you can communicate with the native helper and validate responses. This approach should instantiate one helper for the lifetime of your application. The helper will be listening in for requests from your application.
 * native-helper-src - a .NET solution containing a basic example of a helper that lets you achieve this functionality with some logging support added in. Native Helper logs will be within your OpenFin/apps/yourapplication/assets/native-helper/version/logging/ folder. E.g. app1 and app2 would be:  OpenFin/apps/OpenFin-FileHelper-Demo-App1/assets/native-helper/0.1.0/logging/ and OpenFin/apps/OpenFin-FileHelper-Demo-App2/assets/native-helper/0.1.0/logging/
 
+
+![Demo App 1 & 2](filehelper-demo.png)
+
+
 Again this is an example. Please treat it as such. 
 
 License
