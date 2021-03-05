@@ -1,0 +1,29 @@
+{
+    "devtools_port": 9090,
+    "startup_app": {
+        "name": "OpenFin-FileHelper-Demo-App2",
+        "description": "An example of launching an app that uses a helper to save and open csv files",
+        "url": "http://localhost:3000/app2.html",
+        "applicationIcon": "http://localhost:3000/favicon.ico",
+        "uuid": "OpenFin-FileHelper-Demo-App2",
+        "autoShow": true,
+        "permissions": {
+            "System": {
+                "launchExternalProcess": true
+            }
+        }
+    },
+    "runtime": {
+        "arguments": "",
+        "version": "16.*"
+    },
+    "appAssets": [
+        {
+            "alias": "native-helper",
+            "src": "http://localhost:3000/native-helper.zip",
+            "version": "0.1.0",
+            "forceDownload": true
+        }
+    ],
+    "shortcut": {}
+}

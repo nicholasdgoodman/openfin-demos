@@ -1,10 +1,11 @@
 {
     "devtools_port": 9090,
     "startup_app": {
-        "name": "OpenfinPOC",
-        "description": "OpenFin POC",
-        "url": "http://localhost:3000/index.html",
-        "uuid": "OpenfinPOC-zd60mfyl1l",
+        "name": "OpenFin-FileHelper-Demo-App1",
+        "description": "An example of launching an app that uses a helper to save and open csv files",
+        "url": "http://localhost:3000/app1.html",
+        "applicationIcon": "http://localhost:3000/favicon.ico",
+        "uuid": "OpenFin-FileHelper-Demo-App1",
         "autoShow": true,
         "permissions": {
             "System": {

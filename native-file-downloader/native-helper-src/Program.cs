@@ -1,25 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using log4net;
+using System;
 using System.Windows.Forms;
 
-using Fin = Openfin.Desktop;
-
-namespace native_helper_src
+namespace NativeHelper
 {
     static class Program
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(Program));
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            log4net.Config.XmlConfigurator.Configure();
+
+            String id = null;
+
+            if(args.Length > 0)
+            {
+                logger.Debug("Passed arguments");
+
+                if(args.Length >= 2 && args[0] == "-i" && args[1] != null && args[1].Length > 0)
+                {
+                    logger.Debug("Passed -i identifier with value: " + args[1]);
+                    id = args[1];
+                }
+            }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new FileHelper(id));
         }
     }
 }

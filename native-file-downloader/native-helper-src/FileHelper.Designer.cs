@@ -1,6 +1,6 @@
-﻿namespace native_helper_src
+﻿namespace NativeHelper
 {
-    partial class MainForm
+    partial class FileHelper
     {
         /// <summary>
         /// Required designer variable.
@@ -31,7 +31,7 @@
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
-            // MainForm
+            // FileHelper
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

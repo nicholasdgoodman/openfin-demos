@@ -1,0 +1,28 @@
+<html>
+
+<head>
+    <title>File Save and Open Demo - App 1</title>
+    <link href="main.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="test">
+        <h1>File Save and Open Demo - App 1</h1>
+        <p>
+            This will save the export.csv file generated in memory to your downloads folder. You can only open a file you have saved. And this helper will be tied to this application. You should see app1 and app2 have automatically launched when you npm install/npm start the demo and each have their own helper.
+        </p>
+        <p>
+            If you try to save a file that is currently open an error will be returned and you can use the file-helper.js module as an example on how to check for errors. 
+        </p>
+        <p>The native helper will create a log file in your OpenFin/apps/app-name directory. There will be an assets folder and if you drill down you will find a logging folder with logs containing supporting information.</p>
+        <p>This example initialises the file-helper module to get the native helper when the page loads (the buttons will show once it has been fetched). If you want to do this lazily then you can skip calling init and it will be fetched the first time you try to save (although there may be more of a delay)</p>
+        <div><button class="button" id="save" style="display: none;">Save CSV</button></div>
+        <br />
+        <div><button class="button" id="open" style="display: none;">Open File</button></div>
+        <br />
+        <div><button class="button" id="delayed" style="display: none;">Async Save & Open</button></div>
+    </div>
+    <script type="module" src="./index.js"></script>
+</body>
+
+</html>
