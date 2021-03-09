@@ -15,4 +15,4 @@ exec(`openfin -l -c http://localhost:${port}/app1.json`);
 
 setTimeout(()=> {
     exec(`openfin -l -c http://localhost:${port}/app2.json`);
-}, 5000);
+}, 10000);

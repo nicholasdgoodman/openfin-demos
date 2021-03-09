@@ -97,9 +97,9 @@ export async function saveAndOpenFile(fileName, data) {
         return fileId;
     }
 
-    await helper.dispatch('open-file', { fileId });
+    let result = await helper.dispatch('open-file', { fileId });
 
-    return success;
+    return result;
 }
 
 export async function openFile(fileId) {
