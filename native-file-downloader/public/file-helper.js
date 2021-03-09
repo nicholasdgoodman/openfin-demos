@@ -13,8 +13,6 @@ let errorList = {
     "ERR:OPENFILE": "Error: unable to open file"
 };
 
-let success = "SUCCESS";
-
 function getChannelId() {
     let id = fin.me.identity.uuid;
     return id.toLowerCase();

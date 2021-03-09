@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Diagnostics;
+using System.Configuration;
+using System.Collections.Specialized;
 using Newtonsoft.Json.Linq;
 using Fin = Openfin.Desktop;
 using log4net;
@@ -16,12 +18,31 @@ namespace NativeHelper
         private readonly Guid DownloadsFolderId = Guid.Parse("{374DE290-123F-4565-9164-39C4925E467B}");
         private readonly string DownloadFolderPath;
         private static readonly ILog logger = LogManager.GetLogger(typeof(FileHelper));
+        private readonly List<string> approvedFileExtensions = new List<string>();
 
         private readonly Dictionary<string, string> downloads = new Dictionary<string, string>();
 
         public FileHelper(String id)
         {
             logger.Debug("Initializing FileHelper");
+
+            // Read all the keys from the config file
+            NameValueCollection configuredFileTypes;
+            configuredFileTypes = ConfigurationManager.AppSettings;
+
+            foreach (string supportedExtension in configuredFileTypes.AllKeys)
+            {
+                try
+                {
+                    if (Convert.ToBoolean(configuredFileTypes.Get(supportedExtension)))
+                    {
+                        approvedFileExtensions.Add(supportedExtension);
+                    }
+                } catch (Exception parseError)
+                {
+                    logger.Error("Invalid value specified for supported file extension in App.config. Value must be True or False. Key: " + supportedExtension, parseError);
+                }
+            }
 
             if (id == null)
             {
@@ -114,7 +135,7 @@ namespace NativeHelper
                             return ErrorList.ERROR_NO_FILE_NAME;
                         }
 
-                        if (fileName.EndsWith(".txt", StringComparison.InvariantCultureIgnoreCase) || fileName.EndsWith(".csv", StringComparison.InvariantCultureIgnoreCase))
+                        if (isValidFileType(fileName))
                         {
                             logger.Debug(logPrefix + "Filename retrieved: " + fileName);
                             var content = args.Value<string>("content");
@@ -159,7 +180,7 @@ namespace NativeHelper
                             return fileId;
                         } else
                         {
-                            logger.Error("Invalid file extension. We only support txt or csv. Returning id: 'Error - Invalid Extension'");
+                            logger.Error("Invalid file extension. Please check app settings in the App.config to ensure the file extension you are trying to save is supported. Returning id: 'Error - Invalid Extension'");
                             return ErrorList.ERROR_INVALID_FILE_EXTENSION;
                         }
                     });
@@ -213,6 +234,26 @@ namespace NativeHelper
                 }
 
             });
+        }
+
+        private bool isValidFileType(string fileName)
+        {
+            logger.Debug("isValidFileType: Checking for valid file type for file name: " + fileName);
+            bool isValid = false;
+
+            fileName = fileName.ToLower();
+
+            approvedFileExtensions.ForEach(entry =>
+             {
+                 if(fileName.IndexOf('.' + entry.ToLower()) > -1)
+                 {
+                     isValid = true;
+                 }
+             });
+
+            logger.Debug("isValidFileType: Is " + fileName + " a valid file type? : " + isValid);
+            
+            return isValid;
         }
 
         protected override void OnShown(EventArgs e)
