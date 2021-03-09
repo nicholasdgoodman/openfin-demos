@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>Layout Launchbar</title>
+<style>
+    body {
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        user-select: none;
+    }
+    button {
+        width: 54px;
+    }
+    .control-button {
+        font-family:monospace;
+        font-size: large;
+        padding: 0px 8px;
+        cursor: pointer;
+    }
+    .control-button:hover {
+        background-color: plum;
+    }
+    .drag-handle {
+        font-family:monospace;
+        -webkit-app-region: drag;
+        font-size: large;
+        padding: 0px 8px;
+    }
+</style>
+<script src="https://cdn.openfin.co/services/openfin/layouts/1.2.0/openfin-layouts.js"></script> 
+</head>
+<body>
+    <span class="drag-handle" >&#10624;</span>
+    <span class="control-button" title="Reload" onclick="location.reload()">&#8635;</span>
+    <button class="start-app-button" data-app-name="tile" title="Launch Tile">Tile</button>
+    <button class="start-app-button" data-app-name="blotter" title="Launch Blotter">Blotter</button>
+    <select id="workspace-select">
+        <option value="ws1">Workspace 1</option>
+        <option value="ws2">Workspace 2</option>
+    </select>
+    <span class="control-button" id="save-layoutv1" style='color:blue' title="Save Layout V1 Snapshot To Load In Platform App">&#10697;</span>
+    <span id="close-button"  class="control-button" title="Close Application">&#9746;</span>
+    <script type="module" src="launcher-main.js"></script>
+</body>
+</body>
+</html>

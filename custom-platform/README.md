@@ -76,5 +76,26 @@ More enhancements:
 You should be able to swap out our resolver for your own just to see the behaviour with the windows we have (to allow fast iteration of your resolver without firing up your own project).
 
 
+## Layout v1 project
+
+To help picture what the transition from layouts to platform could look like we have included a layouts v1 project that is very similar to the platform setup.
+
+It can be lauched using the following command:
+
+```
+openfin -l -c http://localhost:5001/layoutv1/app.json
+
+```
+
+The code is similar except it uses the layout api. There is also a button on the launcher to save a snapshot of the workspace to localstorage.
+
+If you do that then you will see a new icon appear on the platform launcher that lets you restore the layout v1 snapshot as a platform setup. This is done using:
+
+- layout-to-platform.js
 
 
+This converts a layoutv1 object to a platform object so that the customised platform api (platorm.js) launches and groups the windows to reflect how they were laid out in the layouts app.
+
+This gives an example of how you could convert existing snapshots for when you migrate users from layouts v1 to platform.
+
+[![Click to watch on Vimeo](OpenFin-Layout-To-Platform-Migration-Preview.png)](https://vimeo.com/402123603)
